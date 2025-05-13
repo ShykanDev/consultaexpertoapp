@@ -1,0 +1,7 @@
+{
+  "name": "ConsultaExpertoApp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
