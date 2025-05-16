@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router';
 
 import { IonicVue } from '@ionic/vue';
-
+import './index.css';
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
 
@@ -29,14 +29,87 @@ import '@ionic/vue/css/display.css';
 
 /* @import '@ionic/vue/css/palettes/dark.always.css'; */
 /* @import '@ionic/vue/css/palettes/dark.class.css'; */
-import '@ionic/vue/css/palettes/dark.system.css';
+/*import '@ionic/vue/css/palettes/dark.system.css';*/
 
 /* Theme variables */
 import './theme/variables.css';
 
+import { OhVueIcon, addIcons } from "oh-vue-icons";
+import { FaFlag, RiZhihuFill, BiClipboard2CheckFill ,
+
+  FaBalanceScale,
+  FaUserMd,
+  FaCalculator,
+  FaBuilding,
+  FaLaptopCode,
+  FaBullhorn,
+  FaLanguage,
+  FaSearch,
+  FaCog,
+  FaFileAlt,
+  FaChartLine,
+  FaGavel,
+  FaUserGraduate,
+  FaChalkboardTeacher,
+  FaUtensils,
+  OiTasklist,
+  MdLoginRound,
+  FaUserEdit,
+  BiShieldLockFill
+} from "oh-vue-icons/icons";
+addIcons(FaFlag, RiZhihuFill, BiClipboard2CheckFill,
+  FaBalanceScale,
+  FaUserMd,
+  FaCalculator,
+  FaBuilding,
+  FaLaptopCode,
+  FaBullhorn,
+  FaLanguage,
+  FaSearch,
+  FaCog,
+  FaFileAlt,
+  FaChartLine,
+  FaGavel,
+  FaUserGraduate,
+  FaChalkboardTeacher,
+  FaUtensils,
+  OiTasklist,
+  MdLoginRound,
+  FaUserEdit,
+  BiShieldLockFill
+);
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { createPinia } from 'pinia';
+
+const pinia = createPinia()
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyC1Lz0ciKRt-JSioyOVnKG4F-DPLVaGxRI",
+  authDomain: "consulta-gratis-en-linea.firebaseapp.com",
+  projectId: "consulta-gratis-en-linea",
+  storageBucket: "consulta-gratis-en-linea.firebasestorage.app",
+  messagingSenderId: "577654296577",
+  appId: "1:577654296577:web:1f925fd2343d97c5acb000",
+  measurementId: "G-CSNSTN8SVM"
+};
+
+// Initialize Firebase
+const appFirebase = initializeApp(firebaseConfig);
+const analytics = getAnalytics(appFirebase);
+
+
 const app = createApp(App)
+  .component("v-icon", OhVueIcon)
   .use(IonicVue)
-  .use(router);
+  .use(router)
+  .use(pinia)
 
 router.isReady().then(() => {
   app.mount('#app');
