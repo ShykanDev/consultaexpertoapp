@@ -1,42 +1,42 @@
 <template>
     <ion-content class="w-full bg-gradient-to-br from-indigo-50 to-blue-50 ion-padding">
-      <form @submit.prevent="" class="mx-auto space-y-6 max-w-2xl">
+      <form @submit.prevent="register" class="mx-auto space-y-6 max-w-2xl">
         <!-- Título -->
         <div class="mb-8 text-center">
           <h1 class="mb-2 text-3xl font-bold text-orange-700">Unase a nosotros</h1>
           <p class="text-gray-500">Crea tu cuenta en segundos</p>
         </div>
-  
+        
         <!-- Nombre Completo -->
         <div class="form-group">
           <label class="form-label">Nombre completo</label>
           <ion-input
-            v-model="formData.fullName"
-            type="text"
+          v-model="formData.fullName"
+          type="text"
             placeholder="Ej. María González"
             class="!pl-11 form-input"
           >
             <v-icon name="ri-user-2-fill" class="absolute left-3 top-1/2 text-xl text-gray-400 -translate-y-1/2" />
           </ion-input>
         </div>
-  
+        
         <!-- Email -->
         <div class="form-group">
           <label class="form-label">Correo electrónico</label>
           <ion-input
-            v-model="formData.email"
-            type="email"
+          v-model="formData.email"
+          type="email"
             placeholder="tucorreo@example.com"
             class="!pl-11 form-input"
           >
-            <v-icon name="md-email" class="absolute left-3 top-1/2 text-xl text-gray-400 -translate-y-1/2" />
+          <v-icon name="md-email" class="absolute left-3 top-1/2 text-xl text-gray-400 -translate-y-1/2" />
           </ion-input>
           <div v-if="errors.email" class="form-error">
             <v-icon name="ri-alert-fill" class="mr-2 text-red-500" />
             {{ errors.email }}
           </div>
         </div>
-  
+        
         <!-- Contraseña -->
         <div class="form-group">
           <label class="form-label">Contraseña</label>
@@ -50,8 +50,8 @@
             <v-icon name="md-password-round" class="text-xl text-gray-400" />
           </ion-input>
         </div>
-        </div>
-  
+      </div>
+      
         <!-- Confirmar Contraseña -->
         <div class="form-group">
           <label class="form-label">Confirmar Contraseña</label>
@@ -88,7 +88,7 @@
         <div class="form-group">
           <label class="flex gap-3 items-start p-3 bg-indigo-50 rounded-lg">
             <ion-checkbox
-              v-model:checked="formData.acceptedTerms"
+             v-model="formData.acceptedTerms"
               class="mt-0.5 shrink-0 checkbox-custom"
             ></ion-checkbox>
             <span class="text-sm leading-tight text-gray-600">
@@ -104,6 +104,7 @@
           type="submit"
           expand="block"
           class="submit-button group"
+          :disabled="isMinor"
         >
           <span class="flex gap-2 items-center">
             Crear cuenta
@@ -111,10 +112,20 @@
           </span>
         </ion-button>
   
-        <p class="mt-8 text-sm text-center text-gray-500">
-          ¿Ya tienes cuenta? 
-          <a href="#" class="font-semibold text-indigo-600 hover:underline">Ingresa aquí</a>
-        </p>
+      <!--
+        Creating a button that links to the login page  without iontab-button  
+      -->
+      <ion-button
+        expand="block"
+        class="submit-button group"
+        router-link="/tabs/tab1"
+      >
+        <span class="flex gap-2 items-center">
+          Ingrese aquí
+          <v-icon name="ri-arrow-right-line" class="transition-transform group-hover:translate-x-1" />
+        </span>
+      </ion-button>
+
       </form>
     </ion-content>
   </template>
@@ -125,17 +136,35 @@
     IonContent,
     IonInput,
     IonCheckbox,
-    IonButton
+    IonButton,
   } from '@ionic/vue';
 
   import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, UserCredential } from 'firebase/auth';
+import { getFirestore, doc, setDoc, collection, addDoc, Timestamp } from 'firebase/firestore';
+
+
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css'; // for React, Vue and Svelte
+
+// Create an instance of Notyf
+const notyf = new Notyf({
+   position:{
+    x:'center',
+    y:'top'
+   },
+   dismissible:true,
+   duration:4000,
+    ripple:true
+});
 
 
   // Lógica del formulario
   const formData = reactive({
     fullName: '',
     email: '',
+    age: null,
     password: '',
     confirmPassword: '',
     acceptedTerms: false,
@@ -155,7 +184,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
 //Función para verificar si es menor de edad (18 años)
 const checkIfMinor = () => {
   if (!date.value) {
-    console.log("No se ha seleccionado fecha");
+    notyf.error('Por favor, selecciona tu fecha de nacimiento');
     return;
   }
 
@@ -172,15 +201,105 @@ const checkIfMinor = () => {
   }
 
   isMinor.value = age < 18;
-  console.log(`Edad calculada: ${age} años - ${isMinor.value ? "Es menor de edad" : "Es mayor de edad"}`);
-
+  // notyf.success(`Edad calculada: ${age} años - ${isMinor.value ? "El usuario es menor de edad" : "El usuario es mayor de edad"}`);
+  // notyf.success(`Edad calculada: ${age} años - ${isMinor.value ? "El usuario es menor de edad" : "El usuario es mayor de edad"}`);
+  isMinor.value ? notyf.error('Debe ser mayor de edad para poder registrarse, teniendo ' + age + ' años no es posible registrarse' ) : notyf.success('Edad de ' + age + ' años válida');
   return isMinor.value;
 };
 
 watch(date, () => {
   checkIfMinor();
 });
+
+//Firebase stuff
+const auth = getAuth()
+const db = getFirestore();
+
+const createUserData = async (user: UserCredential) => {
+  if (!formData.fullName || !formData.email || !formData.password || !formData.confirmPassword || !formData.acceptedTerms) {
+    notyf.error('Por favor, completa todos los campos');
+    return;
+  }
+
+  if (formData.password !== formData.confirmPassword) {
+    notyf.error('Las contraseñas no coinciden');
+    return;
+  }
+
+  try {
+    const docRef = doc(db, "users", user.user.uid);
+
+    // 1. Crea el documento principal
+    await setDoc(docRef, {
+      name: formData.fullName,
+      email: formData.email,
+      age: formData.age,
+      terms: formData.acceptedTerms,
+      createdAt: Timestamp.now(),
+      userId: user.user.uid,
+      freeConsultations: true,
+    });
+
+    // 2. Añade subcolección de historial
+    const historyRef = collection(docRef, "HistoryAppointments");
+    await addDoc(historyRef, {
+      createdAt: Timestamp.now(),
+      userId: user.user.uid,
+    });
+
+    // 3. Añade subcolección de futuras citas
+    const futureRef = collection(docRef, "FutureAppointments");
+    await addDoc(futureRef, {
+      createdAt: Timestamp.now(),
+      userId: user.user.uid,
+    });
+
+    console.log("Usuario y subcolecciones creadas");
+
+  } catch (error) {
+    console.error("Error al crear usuario o subcolecciones:", error);
+  }
+}
+
+
+//Register the user to firebase
+const register = async () => {
+  checkIfMinor()
+  if (isMinor.value) return
+  //change this to be more explicit and know what the error is
+  if (!formData.fullName || !formData.email || !formData.password || !formData.confirmPassword || !formData.acceptedTerms) {
+    notyf.error('Por favor, completa todos los campos');
+    return;
+  }
+
+  if (formData.password !== formData.confirmPassword) {
+    notyf.error('Las contraseñas no coinciden');
+    return;
+  }
+ // TODO ADD IT LATER: if (!validateForm()) return
+  try {
+    const user = await createUserWithEmailAndPassword(auth, formData.email, formData.password)
+    sendEmailVerification(user.user)
+    await createUserData(user)
+
+    //Once user has created his account successfully, reset the register fields
+    formData.fullName = ''
+    formData.email = ''
+    formData.age = null
+    formData.password = ''
+    formData.confirmPassword = ''
+    formData.acceptedTerms = false
+    showPassword.value = false
+    showConfirmPassword.value = false
+  } catch (error) {
+    console.log(error);
+  }
+}
+
   </script>
+  
+
+
   
   <style scoped>
   .form-group {
@@ -213,11 +332,11 @@ watch(date, () => {
   }
   
   .submit-button {
-    --background: #4f46e5;
+    --background: #b93700;
     --border-radius: 10px;
     --box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.1);
     --padding-top: 16px;
     --padding-bottom: 16px;
-    @apply font-semibold text-base transition-all hover:bg-indigo-600 active:bg-indigo-700;
+    
   }
   </style>

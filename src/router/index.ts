@@ -26,6 +26,14 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'tab3',
         component: () => import('@/views/Tab3Page.vue')
+      },
+      {
+        path: 'user-account',
+        component: () => import('@/views/client/UserAccount.vue')
+      },
+      {
+        path: 'user-account/:id',
+        component: () => import('@/views/client/UserAccount.vue')
       }
     ]
   }

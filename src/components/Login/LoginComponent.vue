@@ -25,9 +25,7 @@
 
         >
           <div class="flex gap-3 items-center">
-            <span  class="animate-fade" :key="currentExpert">{{ experts[currentExpert].name }}     <v-icon color="white" class="animate-fade" :key="currentExpert" :name="experts[currentExpert].icon" scale="1.5" /></span>
-
-            
+            <span  class="animate-fade" :key="currentExpert">{{ experts[currentExpert].name }}     <v-icon color="white" class="animate-fade" :key="currentExpert" :name="experts[currentExpert].icon" scale="1.5" /></span>            
           </div>
         </h3>
         <div class="flex justify-center rounded-xl bg-sky-700/25 w-dvw">
@@ -39,7 +37,14 @@
       <div class="rounded-2xl ion-padding" slot="content">
         <ul class="rounded-2xl">
           <!--Adding a emerald bg to the li that matches the current expert-->
-          <li v-for="(expert, index) in experts" :key="index" @click="setUserSelection(expert.name)" class="p-1 mb-1 rounded-md animate-fade hover:cursor-pointer" :class="{'bg-blue-700 text-white p-1 rounded-lg' : expert.name == experts[currentExpert].name,  'bg-sky-500/25' : expert.name != experts[currentExpert].name, 'bg-emerald-500/55 text-emerald-800 font-medium' : expert.name == userSelection  }" >{{ 
+          <li v-for="(expert, index) in experts" :key="index" @click="setUserSelection(expert.name)" class="p-1 mb-1 rounded-md animate-fade hover:cursor-pointer" :class="{
+            
+            'bg-blue-700 text-white p-1 rounded-lg' : expert.name == experts[currentExpert].name, 
+
+           'bg-sky-500/25' : expert.name != experts[currentExpert].name, 
+
+           'bg-emerald-500/55 text-blue-600 font-black text-base italic' : expert.name == userSelection 
+           }" >{{ 
             (expert.name.includes('en'))  ? expert.name.replace(/en/, '') : expert.name}}</li>
         </ul>
       </div>
@@ -158,7 +163,7 @@
     eye, 
     eyeOff 
   } from 'ionicons/icons';
-  import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+  import { getAuth, sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
   
   const email = ref('');
   const password = ref('');
@@ -209,7 +214,7 @@ onMounted(() => {
     if (currentExpert.value >= experts.value.length) {
       currentExpert.value = 0;
     }
-    console.log(experts.value[currentExpert.value]);
+
   }, 2000);
 }
 
@@ -231,27 +236,26 @@ const setUserSelection = (expert:string):void => {
 const resetPasswordEmail = ref()
 const alertButtons = [
   {
-    text: 'Enviar Correo',
-    handler: (data: any) => {
-      if (!data || !data.values || !data.values[0]) {
-        console.log('No data received');
-        return false;
-      }
-      
-      const email = data.values[0];
-      console.log('User entered:', email);
-      
-      // Store the email if you want to use it later
-      resetPasswordEmail.value = email;
-      
-      return true; // Returns true to close the alert
+    text: 'Cancelar',
+    role: 'cancel',
+    handler: () => {
+      console.log('Cancelado')
     }
   },
   {
-    text: 'Cancelar',
-    role: 'cancel'
+    text: 'Aceptar',
+    handler:  async (data) => {
+     try {
+      console.log(data[0]);
+      
+      await sendPasswordResetEmail(auth, data[0])
+      console.log('Correo de restablecimiento de contraseña enviado');
+     } catch (error) {
+      console.log('Error al enviar correo de restablecimiento de contraseña', error);
+     }
+    }
   }
-];
+]
 
 
   const alertInputs = [
@@ -259,7 +263,7 @@ const alertButtons = [
       type: 'email',
       placeholder: 'correo@ejemplo.com',
       min: 1,
-      max: 100,
+      max: 1000,
     },
   ];
 
