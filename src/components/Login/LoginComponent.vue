@@ -16,7 +16,7 @@
     <div class="order-2 space-y-6 md:order-1">
 
       <h2 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-sky-600 md:text-4xl">
-        Su plataforma para contratar un experto:
+        Su plataforma para consultar un experto:
       </h2>
 
       <div class="flex relative gap-2 justify-center items-center mt-6">
@@ -31,14 +31,15 @@
           </div>
         </h3>
         <div class="flex justify-center rounded-xl bg-sky-700/25 w-dvw">
-          <ion-accordion-group class="w-full">
+          <ion-accordion-group class="w-full" expand="inset">
     <ion-accordion value="first" class="w-full" >
       <ion-item slot="header" class="rounded">
         <ion-label>Ver todos los expertos</ion-label>
       </ion-item>
       <div class="rounded-2xl ion-padding" slot="content">
         <ul class="rounded-2xl">
-          <li v-for="(expert, index) in experts" :key="index" @click="setUserSelection(expert.name)" class="p-1 mb-1 rounded-md animate-fade hover:cursor-pointer" :class="{'bg-blue-700 text-white p-1 rounded-lg' : expert.name == experts[currentExpert].name,  'bg-sky-500/25' : expert.name != experts[currentExpert].name  }" >{{ 
+          <!--Adding a emerald bg to the li that matches the current expert-->
+          <li v-for="(expert, index) in experts" :key="index" @click="setUserSelection(expert.name)" class="p-1 mb-1 rounded-md animate-fade hover:cursor-pointer" :class="{'bg-blue-700 text-white p-1 rounded-lg' : expert.name == experts[currentExpert].name,  'bg-sky-500/25' : expert.name != experts[currentExpert].name, 'bg-emerald-500/55 text-emerald-800 font-medium' : expert.name == userSelection  }" >{{ 
             (expert.name.includes('en'))  ? expert.name.replace(/en/, '') : expert.name}}</li>
         </ul>
       </div>

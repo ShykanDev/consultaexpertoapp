@@ -1,14 +1,14 @@
 <template>
   <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Tab 2</ion-title>
+    <ion-header color="primary">
+      <ion-toolbar color="danger">
+        <ion-title>Registrarse</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Tab 2</ion-title>
+        <ion-toolbar color="secondary">
+          <ion-title size="large">Registrarse</ion-title>
         </ion-toolbar>
       </ion-header>
 
@@ -22,3 +22,10 @@ import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue
 import ExploreContainer from '@/components/ExploreContainer.vue';
 import RegisterComponent from '@/components/Login/RegisterComponent.vue';
 </script>
+
+<style scoped>
+:root {
+  --ion-color-primary: ;
+}
+</style>
+

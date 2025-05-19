@@ -20,6 +20,8 @@ import '@ionic/vue/css/text-transformation.css';
 import '@ionic/vue/css/flex-utils.css';
 import '@ionic/vue/css/display.css';
 
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 /**
  * Ionic Dark Mode
  * -----------------------------------------------------
@@ -45,7 +47,7 @@ import { FaFlag, RiZhihuFill, BiClipboard2CheckFill ,
   FaBullhorn,
   FaLanguage,
   FaSearch,
-  FaCog,
+  FaCog,  
   FaFileAlt,
   FaChartLine,
   FaGavel,
@@ -55,7 +57,10 @@ import { FaFlag, RiZhihuFill, BiClipboard2CheckFill ,
   OiTasklist,
   MdLoginRound,
   FaUserEdit,
-  BiShieldLockFill
+  BiShieldLockFill,
+  RiUser2Fill,
+  MdEmail,
+  MdPasswordRound
 } from "oh-vue-icons/icons";
 addIcons(FaFlag, RiZhihuFill, BiClipboard2CheckFill,
   FaBalanceScale,
@@ -76,7 +81,10 @@ addIcons(FaFlag, RiZhihuFill, BiClipboard2CheckFill,
   OiTasklist,
   MdLoginRound,
   FaUserEdit,
-  BiShieldLockFill
+  BiShieldLockFill,
+  RiUser2Fill,
+  MdEmail,
+  MdPasswordRound
 );
 
 // Import the functions you need from the SDKs you need
@@ -104,13 +112,14 @@ const firebaseConfig = {
 const appFirebase = initializeApp(firebaseConfig);
 const analytics = getAnalytics(appFirebase);
 
-
+//El usuario deberá tener un estado de la cita (confirmada/por confirmar) (Cliente)
+//Para el experto debera confirmar primeramente la cita 
 const app = createApp(App)
   .component("v-icon", OhVueIcon)
   .use(IonicVue)
   .use(router)
   .use(pinia)
-
+  .component('VueDatePicker', VueDatePicker);
 router.isReady().then(() => {
   app.mount('#app');
 });
