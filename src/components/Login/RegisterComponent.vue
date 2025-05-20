@@ -125,6 +125,16 @@
           <v-icon name="ri-arrow-right-line" class="transition-transform group-hover:translate-x-1" />
         </span>
       </ion-button>
+      <ion-button
+        expand="block"
+        class="submit-button group"
+        router-link="/tabs/experts-list"
+      >
+        <span class="flex gap-2 items-center">
+          Ver lista de expertos
+          <v-icon name="ri-arrow-right-line" class="transition-transform group-hover:translate-x-1" />
+        </span>
+      </ion-button>
 
       </form>
     </ion-content>

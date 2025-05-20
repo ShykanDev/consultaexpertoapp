@@ -34,6 +34,10 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'user-account/:id',
         component: () => import('@/views/client/UserAccount.vue')
+      },
+      {
+        path: 'experts-list',
+        component: () => import('@/views/ExpertsListView.vue')
       }
     ]
   }

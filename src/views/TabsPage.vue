@@ -17,6 +17,8 @@
           <v-icon name="md-settings" />
           <ion-label>Settings</ion-label>
         </ion-tab-button>
+
+
       </ion-tab-bar>
     </ion-tabs>
   </ion-page>
