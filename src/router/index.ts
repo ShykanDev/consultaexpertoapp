@@ -39,7 +39,8 @@ const routes: Array<RouteRecordRaw> = [
         path: 'experts-list',
         component: () => import('@/views/ExpertsListView.vue')
       }
-    ]
+    ],
+    
   }
 ]
 

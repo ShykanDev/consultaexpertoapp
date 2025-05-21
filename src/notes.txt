@@ -1,0 +1,23 @@
+TO ADD
+
+In the expert list view, add the button to see the expert profiles availables and choose one to see the details of the expert [Partially ✔]
+The expert must have a profile picture, name, description, and a button to see the expert schedule [NOT DONE]
+Add mock experts profiles to be able to update the expert list view [DONE ✔]
+When user logs in, the app must push the view to the expert list view [DONE ✔]
+When user logs out, the app must push the view to the login view [NOT DONE]
+If user select a specific expert, the app must push the view to the expert details view [NOT DONE]
+If user is already logged in, the app must push the view to the expert list view [NOT DONE]
+If user is not logged in, the app must push the view to the login view [NOT DONE]
+
+
+
+TODO:
+When user logs in, if she is not an expert user should be redirected to the expert list view [DONE ✔]
+When user logs in, if she is an expert user should be redirected to the expert details view [NOT DONE]
+When user logs in, if he doesn't have an expert pick, the app must push the view to the expert list view as normal but without programatically selecting an expert [NOT DONE]
+When user logs in, if he has an expert pick, the app must push the view to the expert details view and not the expert list view [NOT DONE]
+When user logs out, the app must push the view to the login view [NOT DONE]
+When user is already logged in, the app must push the view to the expert list view [NOT DONE]
+When user is not logged in, the app must push the view to the login view [NOT DONE]
+
+

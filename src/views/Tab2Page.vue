@@ -1,8 +1,8 @@
 <template>
   <ion-page>
-    <ion-header color="primary">
-      <ion-toolbar color="danger">
-        <ion-title>Registrarse</ion-title>
+    <ion-header >
+      <ion-toolbar >
+        <ion-title class="text-xl font-bold text-orange-800 font-quicksand">Registrarse</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">

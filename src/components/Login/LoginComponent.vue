@@ -7,8 +7,8 @@
       </section>
      
 
-      <aside v-if="userSelection" class="p-2 text-white bg-gradient-to-r from-blue-900 via-blue-500 to-blue-400 rounded-xl shadow-md">
-        <h4>Inicie sesión para consultar un experto {{ userSelection }}</h4>
+      <aside v-if="userSelection" class="p-2 text-sky-600 rounded-xl border border-sky-600 shadow-md">
+        <h4>Inicie sesión para consultar un experto <span class="font-bold text-white bg-sky-700 rounded">{{ userSelection }}</span></h4>
       </aside>
 
       <div class="px-4 py-8 mx-auto max-w-8xl md:px-8">
@@ -148,6 +148,7 @@
   
   <script lang="ts" setup>
   import { onMounted, ref } from 'vue';
+  import { useRouter } from 'vue-router';
   import { 
     IonItem, 
     IonInput, 
@@ -164,24 +165,39 @@
     eyeOff 
   } from 'ionicons/icons';
   import { getAuth, sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
+import { authStore } from '@/store/auth';
   
   const email = ref('');
   const password = ref('');
   const showPassword = ref(false);
   
+  //router for ionic to push views 
+  const router = useRouter();
+
   const auth = getAuth();
   
 const login = async()=>{           
   try {
    const user = await signInWithEmailAndPassword(auth, email.value, password.value);
-    if(user && user.user.email) {
+   if(!user) {
+    console.log('no se logro iniciar sesion');
+    return;
+   }
+    if(user && user.user.email && user.user.uid) { //User is expert
       if(user.user.email == 'awscodeapp@gmail.com'){
-        console.log('el usuario es experto');
+    //User is expert, so we dont do nothing here until we implement the expert login
+        alert('el usuario es experto');
+        return;
       }
-        console.log(user);
-    } else{
-        console.log('user does not exist');
-    }
+      if(user.user.email != 'awscodeapp@gmail.com'){
+        authStore().setIsAuth(true); 
+      //User is not expert, so we push to the expert list view and set the user name and uid in the store
+      authStore().setUserName(user.user.displayName);
+      authStore().setUserUid(user.user.uid); 
+      router.push('/tabs/experts-list');
+      }
+
+    } 
   } catch (error) {
     console.log(error);
   }
@@ -234,6 +250,7 @@ const setUserSelection = (expert:string):void => {
 
 
 const resetPasswordEmail = ref()
+
 const alertButtons = [
   {
     text: 'Cancelar',
@@ -267,11 +284,13 @@ const alertButtons = [
     },
   ];
 
-  const getAlertInputs = () => {
-    console.log('Clicked');
-    
-    console.log(alertInputs);
-  }
+const showInfoExpert = ref(false);
+
+const toggleShowInfoExpert = () => {
+  
+}
+
+
   </script>
   
   <style scoped>

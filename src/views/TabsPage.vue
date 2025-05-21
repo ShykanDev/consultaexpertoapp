@@ -13,9 +13,9 @@
           <ion-label>Registrarse</ion-label>
         </ion-tab-button>
 
-        <ion-tab-button v-if="currentUser == 'Axel Cova'" tab="tab3" href="/tabs/tab3">
-          <v-icon name="md-settings" />
-          <ion-label>Settings</ion-label>
+        <ion-tab-button v-if="authStore().getIsAuth" tab="tab3" href="/tabs/experts-list">
+          <v-icon name="md-listalt-round" />
+          <ion-label>Ver Expertos</ion-label>
         </ion-tab-button>
 
 
@@ -25,10 +25,11 @@
 </template>
 
 <script setup lang="ts">
-import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
-import { ref } from 'vue';
+import { authStore } from '@/store/auth';
+import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonPage, IonRouterOutlet } from '@ionic/vue';
 
-const currentUser = ref('Axel');
+
+
 
 
 </script>

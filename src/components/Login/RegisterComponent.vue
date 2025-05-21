@@ -77,7 +77,7 @@
   
 
         <VueDatePicker v-model="date" auto-apply partial-flow :enable-time-picker="false"
-        :flow="['month', 'year', 'calendar']" />
+        :flow="['year', 'month', 'calendar']" />
 
         <p v-if="isMinor" class="mt-2 text-red-500">
           <v-icon name="ri-alert-fill" class="mr-2 text-red-500" />

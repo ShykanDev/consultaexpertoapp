@@ -4,8 +4,8 @@
   <ion-page class="animate-fade-right">
     <!-- Header Top Left-->
     <ion-header>
-      <ion-toolbar color="#08abfc" class="bg-sky-700 bg-gradient-to-r via-emerald-700 from to-sky-950">
-        <ion-title class="text-xl font-bold text-white font-quicksand">Inicio de Sesión</ion-title>
+      <ion-toolbar >
+        <ion-title class="text-xl font-bold text-sky-700 font-quicksand">Inicio de Sesión</ion-title>
       </ion-toolbar>
     </ion-header>
 
