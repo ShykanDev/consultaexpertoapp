@@ -70,14 +70,7 @@
 <!-- popup that shows expert info (if there is more than one expert selected, it also shows a list of experts) -->
  <section v-if="expertPopup" @click.self="toggleExpertPopup('close')" class="flex overflow-auto fixed top-0 left-0 z-50 justify-center items-center px-2 w-full h-full bg-black bg-opacity-30 animate-fade animate-duration-300">
   <div @click.stop class="overflow-auto p-6 bg-white rounded-lg shadow-lg max-h-[80vh]">
-    <PrevInfoComponent/> 
-    <PrevInfoComponent/> 
-    <PrevInfoComponent/> 
-    <PrevInfoComponent/> 
-    <PrevInfoComponent/> 
-    <PrevInfoComponent/> 
-    <PrevInfoComponent/> 
-    <PrevInfoComponent/> 
+    <PrevInfoComponent v-for="(expert, index) in mockExperts" :key="index" :expertName="expert.name" :expertImage="expert.image" :expertSummary="expert.bio" :expertSpecialty="expert.specialty" :expertRating="expert.rating"/>
   </div>
  </section>
 
@@ -243,8 +236,8 @@ import PrevInfoComponent from '@/components/Expert/PrevInfoComponent.vue';
 import SpecializationCard from '@/components/ExpertList/SpecializationCard.vue';
 import { userStore } from '@/store/user';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel } from '@ionic/vue';
-import { collection, getFirestore } from 'firebase/firestore';
-import { ref } from 'vue';
+import { collection, getDocs, getFirestore } from 'firebase/firestore';
+import { onMounted, ref } from 'vue';
 
 
 const db = getFirestore();
@@ -357,7 +350,7 @@ const experts = ref([
     summary: "Abogado especializado en derecho corporativo y litigios."
   },
   {
-    name: "Luis Ángel Suárez",
+    name: "Mario Mendez Arevalo",
     specialty: "Médico",
     description: "Profesionales de la salud comprometidos en atender tus necesidades médicas de forma personalizada.",
     image: "../assets/img/categoria-3.jpg",
@@ -477,6 +470,29 @@ const getExpertSelection = (expert:string) => {
 const expertPopup = ref(false);
 
 const toggleExpertPopup = (action: 'open' | 'close') => (action) === 'open' ? expertPopup.value = true : expertPopup.value = false;
+
+const mockExperts = ref([]);
+const mockExpertsCollection = collection(db, 'MockExperts');
+const gettingMockExperts = async () => {
+  try {
+    const querySnapshot = await getDocs(mockExpertsCollection);
+    querySnapshot.forEach((doc) => {
+      mockExperts.value.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    console.log(mockExperts.value);
+    
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+onMounted(() => {
+  gettingMockExperts();
+})
 
 </script>
 

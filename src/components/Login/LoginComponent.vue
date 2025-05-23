@@ -8,7 +8,7 @@
      
 
       <aside v-if="userSelection" class="p-2 text-sky-600 rounded-xl border border-sky-600 shadow-md">
-        <h4>Inicie sesión para consultar un experto <span class="font-bold text-white bg-sky-700 rounded">{{ userSelection }}</span></h4>
+        <h4>Inicie sesión para consultar un experto <span class="font-bold text-white bg-sky-600 rounded">{{ userSelection }}</span></h4>
       </aside>
 
       <div class="px-4 py-8 mx-auto max-w-8xl md:px-8">

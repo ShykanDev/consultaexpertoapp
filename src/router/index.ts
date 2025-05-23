@@ -41,6 +41,11 @@ const routes: Array<RouteRecordRaw> = [
       }
     ],
     
+  },
+  {
+    path: '/add-experts',
+    component: () => import('@/views/mock/AddExpertsView.vue'),
+  
   }
 ]
 
