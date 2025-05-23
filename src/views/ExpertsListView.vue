@@ -70,7 +70,7 @@
 <!-- popup that shows expert info (if there is more than one expert selected, it also shows a list of experts) -->
  <section v-if="expertPopup" @click.self="toggleExpertPopup('close')" class="flex overflow-auto fixed top-0 left-0 z-50 justify-center items-center px-2 w-full h-full bg-black bg-opacity-30 animate-fade animate-duration-300">
   <div @click.stop class="overflow-auto p-6 bg-white rounded-lg shadow-lg max-h-[80vh]">
-    <PrevInfoComponent v-for="(expert, index) in mockExperts" :key="index" :expertName="expert.name" :expertImage="expert.image" :expertSummary="expert.bio" :expertSpecialty="expert.specialty" :expertRating="expert.rating"/>
+    <PrevInfoComponent v-for="(expert, index) in mockExperts" :key="index" :expertName="expert.name" :expertImage="expert.image" :expertSummary="expert.bio" :expertSpecialty="expert.specialty" :expertRating="expert.rating" :expert-image="expert.imgUrl"/>
   </div>
  </section>
 

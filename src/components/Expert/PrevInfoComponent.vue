@@ -53,6 +53,8 @@
   </template>
   
   <script lang="ts" setup>
+import { useRouter } from 'vue-router';
+
   const props = defineProps({
     expertName: {
       type: String,
@@ -76,9 +78,12 @@
     }
   });
   
+  // ion routing to expert schedule view
+  const router = useRouter();
   const viewSchedule = () => {
     // Logic to redirect to the Expert Schedule view
     console.log('Redirecting to Expert Schedule view');
+    router.push('/expert-info');
   };
   </script>
   
