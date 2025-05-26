@@ -378,6 +378,8 @@ const availableTimeData = ref<IDateRoot[]>()
 //Firebase Stuff
 const db = getFirestore()
 const collectionDates = collection(db, `Dates`)
+
+const collectionMockExperts = collection(db, `MockExperts/${sysStore.getSelectedExpertUid}/Schedule`) //V2 This will get as param the UID of the expert based on the click that user did when clicking on the expert (in the ExpertsListView)
 //TODO:Add Interface to it
 
 const isLoading = ref(true)
@@ -386,7 +388,7 @@ const getDates = async () => {
   isLoading.value = true
   availableTimeData.value = [];
   try {
-    const querySnapshot = await getDocs(collectionDates);
+    const querySnapshot = await getDocs(collectionMockExperts); //V2 
     const doc = querySnapshot.docs[0];
     if (!doc) throw new Error('No se encontró ningún documento en collectionDates');
     console.log('Getting dates from Firebase');
@@ -508,7 +510,6 @@ addDoc(collectionMockExperts, {
 
     ),
 */
-const collectionMockExperts = collection(db, 'Experts')
 const addNewDate = async () => {
   try {
     addDoc(collectionMockExperts, {
@@ -530,9 +531,6 @@ const addNewDate = async () => {
   }
 }
 
-onMounted(() => {
-  addNewDate()
-})
 
 //Variables to set the user selection
 const userDateSelection = ref();

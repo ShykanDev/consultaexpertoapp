@@ -21,4 +21,6 @@ When user is already logged in, the app must push the view to the expert list vi
 When user is not logged in, the app must push the view to the login view [NOT DONE]
 
 
-ioni
+//Changes to be added to 
+//When user clicks on an expert, the app must dave the expert UID in the system store
+// In the schedule view, the app must use the expert UID to get the expert schedule from Firebase

@@ -35,7 +35,7 @@
             'bg-gradient-to-r from-teal-500 to-teal-600 text-white border-teal-600 shadow-md':
               hour === userHourSelection && dayInfo.day === userDateSelection,
             // Hover para horas disponibles
-            'hover:shadow-md hover:transform hover:scale-[1.02]':
+            'hover:shadow-md hover:transform hover:scale-[1.02] active:scale-[.93] ':
               !hoursTaken.includes(hour),
           }"
         >

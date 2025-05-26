@@ -11,12 +11,12 @@
           />
           <v-icon v-else name="la-user-tie-solid" scale="2" />
         </div>
-  
+ 
         <!-- Expert Details -->
         <div class="flex flex-col">
           <!-- Expert Name -->
           <h2 class="pb-2 text-xl font-bold text-gray-800 border-b border-sky-600">{{ expertName || 'Unknown Expert' }}</h2>
-  
+          {{ sysStore.getSelectedExpertUid  ?? 'No expert selected'}}
           <!-- Expert Specialty -->
           <p class="mb-2 text-sm text-gray-600">{{ expertSpecialty || 'Specialty' }}</p>
   
@@ -54,11 +54,18 @@
   
   <script lang="ts" setup>
 import { useRouter } from 'vue-router';
+import systemStore from '@/store/system';
+
+const sysStore = systemStore();
 
   const props = defineProps({
     expertName: {
       type: String,
       default: 'Unknown Expert'
+    },
+    expertUid: {
+      type: String,
+      default: ''
     },
     expertImage: {
       type: String,
@@ -81,8 +88,8 @@ import { useRouter } from 'vue-router';
   // ion routing to expert schedule view
   const router = useRouter();
   const viewSchedule = () => {
-    // Logic to redirect to the Expert Schedule view
-    console.log('Redirecting to Expert Schedule view');
+    //Add the expert UID to the system store (this value will be used to get the expert schedule from Firebase in the ExpertInfoView)
+    sysStore.setSelectedExpertUid(props.expertUid);
     router.push('/expert-info');
   };
   </script>
