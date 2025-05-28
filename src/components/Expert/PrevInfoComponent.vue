@@ -16,7 +16,7 @@
         <div class="flex flex-col">
           <!-- Expert Name -->
           <h2 class="pb-2 text-xl font-bold text-gray-800 border-b border-sky-600">{{ expertName || 'Unknown Expert' }}</h2>
-          {{ sysStore.getSelectedExpertUid  ?? 'No expert selected'}}
+          
           <!-- Expert Specialty -->
           <p class="mb-2 text-sm text-gray-600">{{ expertSpecialty || 'Specialty' }}</p>
   

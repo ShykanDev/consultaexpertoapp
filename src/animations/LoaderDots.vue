@@ -1,145 +1,100 @@
 <style scoped>
-  .container {
-    width: 200px;
-    height: 200px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin: auto;
-    filter: url("#goo");
-    animation: rotate-move 2s ease-in-out infinite;
+  .loader {
+    position: relative;
+    width: 80vw;
+    height: 170px;
+    margin-bottom: 10px;
+    border: 1px solid #d3d3d3;
+    padding: 15px;
+    background-color: #e3e3e3;
+    overflow: hidden;
+    border-radius: 15px;
   }
 
-  .dot {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background-color: #000;
+  .loader:after {
+    content: "";
     position: absolute;
+    width: 100%;
+    height: 100%;
     top: 0;
-    bottom: 0;
     left: 0;
-    right: 0;
-    margin: auto;
+    background: linear-gradient(110deg, rgba(227, 227, 227, 0) 0%, rgba(227, 227, 227, 0) 40%, rgba(227, 227, 227, 0.5) 50%, rgba(227, 227, 227, 0) 60%, rgba(227, 227, 227, 0) 100%);
+    animation: gradient-animation_2 1.2s linear infinite;
   }
 
-  .dot-3 {
-    background-color: #ff1717;
-    animation: dot-3-move 2s ease infinite, index 6s ease infinite;
+  .loader .wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
   }
 
-  .dot-2 {
-    background-color: #0051ff;
-    animation: dot-2-move 2s ease infinite, index 6s -4s ease infinite;
+  .loader .wrapper > div {
+    background-color: #cacaca;
   }
 
-  .dot-1 {
-    background-color: #ffc400;
-    animation: dot-1-move 2s ease infinite, index 6s -2s ease infinite;
+  .loader .circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
   }
 
-  @keyframes dot-3-move {
-    20% {
-      transform: scale(1);
+  .loader .button {
+    display: inline-block;
+    height: 32px;
+    width: 75px;
+  }
+
+  .loader .line-1 {
+    position: absolute;
+    top: 11px;
+    left: 58px;
+    height: 10px;
+    width: 100px;
+  }
+
+  .loader .line-2 {
+    position: absolute;
+    top: 34px;
+    left: 58px;
+    height: 10px;
+    width: 150px;
+  }
+
+  .loader .line-3 {
+    position: absolute;
+    top: 57px;
+    left: 0px;
+    height: 10px;
+    width: 100%;
+  }
+
+  .loader .line-4 {
+    position: absolute;
+    top: 80px;
+    left: 0px;
+    height: 10px;
+    width: 92%;
+  }
+
+  @keyframes gradient-animation_2 {
+    0% {
+      transform: translateX(-100%);
     }
-    45% {
-      transform: translateY(-18px) scale(0.45);
-    }
-    60% {
-      transform: translateY(-90px) scale(0.45);
-    }
-    80% {
-      transform: translateY(-90px) scale(0.45);
-    }
+
     100% {
-      transform: translateY(0px) scale(1);
-    }
-  }
-
-  @keyframes dot-2-move {
-    20% {
-      transform: scale(1);
-    }
-    45% {
-      transform: translate(-16px, 12px) scale(0.45);
-    }
-    60% {
-      transform: translate(-80px, 60px) scale(0.45);
-    }
-    80% {
-      transform: translate(-80px, 60px) scale(0.45);
-    }
-    100% {
-      transform: translateY(0px) scale(1);
-    }
-  }
-
-  @keyframes dot-1-move {
-    20% {
-      transform: scale(1);
-    }
-    45% {
-      transform: translate(16px, 12px) scale(0.45);
-    }
-    60% {
-      transform: translate(80px, 60px) scale(0.45);
-    }
-    80% {
-      transform: translate(80px, 60px) scale(0.45);
-    }
-    100% {
-      transform: translateY(0px) scale(1);
-    }
-  }
-
-  @keyframes rotate-move {
-    55% {
-      transform: translate(-50%, -50%) rotate(0deg);
-    }
-    80% {
-      transform: translate(-50%, -50%) rotate(360deg);
-    }
-    100% {
-      transform: translate(-50%, -50%) rotate(360deg);
-    }
-  }
-
-  @keyframes index {
-    0%,
-    100% {
-      z-index: 3;
-    }
-    33.3% {
-      z-index: 2;
-    }
-    66.6% {
-      z-index: 1;
+      transform: translateX(100%);
     }
   }
 </style>
 
 <template>
-  <div class="container">
-    <div class="dot dot-1"></div>
-    <div class="dot dot-2"></div>
-    <div class="dot dot-3"></div>
+  <div class="loader">
+    <div class="wrapper">
+      <div class="circle"></div>
+      <div class="line-1"></div>
+      <div class="line-2"></div>
+      <div class="line-3"></div>
+      <div class="line-4"></div>
+    </div>
   </div>
-
-  <svg version="1.1" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <filter id="goo">
-        <feGaussianBlur
-          result="blur"
-          stdDeviation="10"
-          in="SourceGraphic"
-        ></feGaussianBlur>
-        <feColorMatrix
-          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 21 -7"
-          mode="matrix"
-          in="blur"
-        ></feColorMatrix>
-      </filter>
-    </defs>
-  </svg>
 </template>

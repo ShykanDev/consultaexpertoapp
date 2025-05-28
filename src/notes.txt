@@ -24,3 +24,40 @@ When user is not logged in, the app must push the view to the login view [NOT DO
 //Changes to be added to 
 //When user clicks on an expert, the app must dave the expert UID in the system store
 // In the schedule view, the app must use the expert UID to get the expert schedule from Firebase
+
+(27/05/2025)
+Memo: Sistema de Gestión de Citas - Requisitos
+1. Estados de Cita
+Confirmada: Cuando el experto ha confirmado la cita
+Por Confirmar: Estado inicial de la cita hasta que el experto la confirme
+
+2. Accesos y Permisos
+Experto (Médico):
+Lectura (Read): Puede ver el estado de las citas
+Escritura (Write): Puede cambiar el estado de las citas (Confirmada/Por Confirmar)
+Cliente (Paciente):
+Solo Lectura (Read): Puede ver el estado de sus citas
+Sin permisos de escritura sobre el estado
+
+3. Flujo de la Aplicación
+Cuando un usuario selecciona una cita:
+Mostrar claramente el estado actual (Confirmada/Por Confirmar)
+El experto puede cambiar este estado según sea necesario
+
+4. Estructura de Datos Propuesta
+Documento del usuario deberá incluir:
+Estado de la cita (confirmada/por confirmar)
+Fecha y hora de la cita
+Información del experto
+Información del cliente
+
+5. Consideraciones Técnicas
+Implementar seguridad en Firestore para los permisos de lectura/escritura
+Las reglas de seguridad deben validar que solo el experto pueda modificar el estado
+La interfaz debe reflejar claramente el estado actual de la cita
+
+6. Próximos Pasos
+Implementar la lógica de cambio de estado
+Actualizar las reglas de seguridad de Firestore
+Modificar la interfaz para mostrar claramente el estado
+Implementar la sincronización en tiempo real de los cambios de estado

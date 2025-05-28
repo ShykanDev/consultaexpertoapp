@@ -40,7 +40,7 @@
           }"
         >
           <span
-            class="font-medium"
+            class="text-sm font-medium text-left"
             :class="{
               'line-through text-gray-500': hoursTaken.includes(hour),
               'text-teal-800':
@@ -57,7 +57,7 @@
             class="flex absolute inset-0 justify-center items-center bg-gray-800 bg-opacity-0 rounded-lg transition-all duration-300 pointer-events-none hover:bg-opacity-80"
           >
             <span
-              class="text-xs font-medium text-white opacity-0 transition-opacity hover:opacity-100"
+              class="hidden text-xs font-medium text-white opacity-0 transition-opacity  hover:opacity-100"
             >
               No Disponible
             </span>

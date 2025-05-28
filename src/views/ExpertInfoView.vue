@@ -21,6 +21,15 @@
               </div>
             </div>
 
+            <div v-if="expertInfo.length > 0">
+              <ExpertInfoCard :expert="expertInfo[0]" />
+            </div>
+            <div v-else>
+              <div class="py-8 text-center">
+                <div class="mx-auto w-12 h-12 rounded-full border-t-2 border-b-2 border-blue-500 animate-spin"></div>
+                <p class="mt-2 text-gray-600">Cargando información del experto...</p>
+              </div>
+            </div>
             <!-- Estado de disponibilidad mejorado -->
             <div v-if="isAvailable" class="p-6 bg-emerald-50 rounded-lg">
               <div class="flex flex-col gap-4 items-start md:flex-row md:items-center">
@@ -56,7 +65,7 @@
               </div>
             </section>
           </div>
-
+          
           <!-- Selector de horarios mejorado -->
           <section v-if="availableTimeData && availableTimeData.length > 0"
             class="p-6 mt-8 bg-white rounded-xl ring-1 ring-gray-100 shadow-lg">
@@ -82,7 +91,7 @@
             <div class="flex flex-col gap-6 items-center p-8 md:flex-row">
               <div class="flex-1">
                 <h3 class="flex gap-3 items-center text-2xl font-semibold text-white">
-                  <v-icon name="bi-calendar2-event" class="text-white" />
+                  <v-icon name="bi-calendar" class="text-white" />
                   <span>
                     Confirmación de cita -
                     <span class="font-bold">{{ userDateSelection }} {{ userDayNumber }}</span>
@@ -177,7 +186,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, } from 'vue';
-
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
 
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -284,13 +293,14 @@ const isAvailable = computed(() => {
 
 
 import '@vuepic/vue-datepicker/dist/main.css'
-import { addDoc, collection, doc, getDocs, getFirestore, Timestamp, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDocs, getFirestore, query, Timestamp, updateDoc, where } from 'firebase/firestore';
 import DateSquare from '@/ExpertoInfoView/DateSquare.vue';
 import clientStore from '@/store/client';
 import { authStore } from '@/store/auth';
 import { experts } from '@/store/experts';
 import expertStore from '@/store/expert';
 import systemStore from '@/store/system';
+import ExpertInfoCard from '@/components/Expert/ExpertInfoCard.vue';
 
 
 const date = ref(new Date())
@@ -383,61 +393,61 @@ const collectionMockExperts = collection(db, `MockExperts/${sysStore.getSelected
 //TODO:Add Interface to it
 
 const isLoading = ref(true)
+
+
 //Function to get the dates from Firebase
 const getDates = async () => {
-  isLoading.value = true
-  availableTimeData.value = [];
   try {
-    const querySnapshot = await getDocs(collectionMockExperts); //V2 
-    const doc = querySnapshot.docs[0];
-    if (!doc) throw new Error('No se encontró ningún documento en collectionDates');
-    console.log('Getting dates from Firebase');
-
-    console.log(doc.data());
-    const data = doc.data() as IDateRoot;
-
-
-    if (!Array.isArray(data.weeklySchedule)) throw new Error('weeklySchedule no es un array');
+    // 1. Obtener datos de Firebase
+    const querySnapshot = await getDocs(collectionMockExperts);
+    const docData = querySnapshot.docs[0]?.data() as IDateRoot;
+    if (!docData?.weeklySchedule) return;
 
     const today = new Date();
-    const currentDay = today.getDay();
+    const currentDay = today.getDay(); // 0=Domingo, 1=Lunes, ..., 6=Sábado
+    const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    
+    // Reordenar días para que empiece por hoy
+    const reorderedDays = [
+      ...daysOfWeek.slice(currentDay),  // Días de hoy en adelante
+      ...daysOfWeek.slice(0, currentDay) // Días pasados de la semana
+    ];
 
-    const updatedSchedule = data.weeklySchedule.map((day) => {
-      const date = new Date(today);
-      const targetDay = day.dayInfo.day;
-      const daysDiff = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'].indexOf(targetDay) - currentDay;
+    // 2. Crear un mapa de días para acceso rápido
+    const scheduleMap = new Map(
+      docData.weeklySchedule.map(day => [day.dayInfo.day, day])
+    );
 
-      const daysToAdd = daysDiff >= 0 ? daysDiff : 7 + daysDiff;
-      date.setDate(today.getDate() + daysToAdd);
+    // 3. Generar la semana actual empezando por hoy
+    const currentWeekSchedule = reorderedDays.map((dayName, index) => {
+      const targetDate = new Date(today);
+      targetDate.setDate(today.getDate() + index); // Sumar días a partir de hoy
 
-      const month = date.toLocaleString('es-ES', { month: 'long' });
-
+      const existingDay = scheduleMap.get(dayName) || { dayInfo: { hoursTaken: [] } };
+      
       return {
         dayInfo: {
-          ...day.dayInfo,
-          dayNumber: date.getDate(),
-          fullDate: date.toISOString().split('T')[0],
-          monthName: month
+          ...existingDay.dayInfo,
+          day: dayName,
+          dayNumber: targetDate.getDate(),
+          fullDate: targetDate.toISOString().split('T')[0],
+          monthName: targetDate.toLocaleString('es-ES', { month: 'long' })
         }
       };
     });
 
-    updatedSchedule.sort((a, b) => {
-      const dateA = new Date(a.dayInfo.fullDate);
-      const dateB = new Date(b.dayInfo.fullDate);
-      return dateA.getTime() - dateB.getTime();
-    });
+    // 4. Actualizar el estado
+    availableTimeData.value = [{
+      ...docData,
+      weeklySchedule: currentWeekSchedule
+    }];
 
-    availableTimeData.value = [{ ...data, weeklySchedule: updatedSchedule }];
-    sysStore.setFirebaseData({ ...data, weeklySchedule: updatedSchedule })
-    isLoading.value = false
-    console.log(availableTimeData.value)
   } catch (error) {
-    console.error('Error fetching dates:', error);
-    isLoading.value = false
+    console.error('Error al obtener fechas:', error);
+  } finally {
+    isLoading.value = false;
   }
-}
-
+};
 onMounted(() => {
   getDates();
 })
@@ -590,6 +600,8 @@ const userHasScheduled = ref(false);
 
 
 //Getting the client appointments function
+
+
 const userAppointmentsFb = ref<IFutureAppointment[]>([]);
 const getClientAppointments = async () => {
   try {
@@ -646,10 +658,10 @@ const addFutureAppointment = async () => {
 //Schedule appointment to the expert collection and call addFutureAppointment to add the appointment to the client collection (if user has an appointment scheduled with this expert, do not allow to schedule another one)
 const scheduleAppointment = async (index: number) => {
 
-  if (!authStore().getIsAuth) {
-    alert('Por favor, inicia sesión para continuar');
-    return;
-  }
+  // if (!authStore().getIsAuth) {
+  //   alert('Por favor, inicia sesión para continuar');
+  //   return;
+  // }
   if (userHasScheduled.value) {
     alert('Ya tiene una cita programada con este experto, no puede programar otra, hasta que no se realice la cita');
     return;
@@ -679,11 +691,17 @@ const scheduleAppointment = async (index: number) => {
     //Vaidation goes here
     // Actualizar Firebase
     arrayToUpdate.value = weeklyScheduleUpdated;
-
-    await updateDoc(doc(db, 'Dates/HS3S8Tsu6m7ce3DNtgzi'), {
-      weeklySchedule: arrayToUpdate.value.weeklySchedule
-    });
-
+    const collectionMockExperts = collection(db, `MockExperts/${sysStore.getSelectedExpertUid}/Schedule`);
+    const qGetMockExpertSchedule = query(collectionMockExperts, where('userUid', '==', sysStore.getSelectedExpertUid));
+    const docSnapshot = await getDocs(qGetMockExpertSchedule);
+    if(docSnapshot.empty) {
+      console.log('There are no data available to fetch');
+      return;
+    }
+    if(docSnapshot.docs.length > 0) {
+      const docRef = doc(collectionMockExperts);
+      updateDoc(docRef, arrayToUpdate.value);
+    }
     getDates();
     console.log('Appointment scheduled successfully');
 
@@ -694,6 +712,52 @@ const scheduleAppointment = async (index: number) => {
   }
 }
 
+interface ITimestamp {
+  seconds: number;
+  nanoseconds: number;
+}
+
+interface IExpert {
+  name: string;
+  profesionalId: string;
+  userUid: string;
+  suspensionReason: string;
+  experienceYears: number;
+  specialty: string;
+  totalRatings: number;
+  isSuspended: boolean;
+  bio: string;
+  createdAt: ITimestamp;
+  email: string;
+  rating: number;
+  completedSessions: number;
+  isBanned: boolean;
+}
+
+// Para el array de expertos
+
+const expertInfo = ref<IExpert[]>([]);
+const mockExpertInfoCollection = collection(db, 'MockExperts');
+const qGetMockExpertInfo = query(mockExpertInfoCollection, where('userUid', '==', sysStore.getSelectedExpertUid));
+const getExpertInfo = async () => { //V2
+  expertInfo.value = [];
+  try {
+    const expertSnapshot = await getDocs(qGetMockExpertInfo);
+    if(expertSnapshot.empty) {
+      console.log('There are no data available to fetch');
+      return;
+    }
+    const expertData = expertSnapshot.docs.map((doc) => doc.data() as IExpert);
+    console.log(expertData);
+    expertInfo.value = expertData;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+onMounted(() => {
+  getExpertInfo();
+})
 </script>
 
 <style scoped></style>
