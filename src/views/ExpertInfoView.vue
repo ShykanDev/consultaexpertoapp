@@ -587,9 +587,8 @@ const addFutureAppointment = async () => {
 //Schedule appointment to the expert collection and call addFutureAppointment to add the appointment to the client collection (if user has an appointment scheduled with this expert, do not allow to schedule another one)
 const scheduleAppointment = async () => {
   const appointmentStore = useAppointmentStore();
-
   
-    if (!appointmentStore.dayName || !appointmentStore.selectedHour) {
+  if (!appointmentStore.dayName || !appointmentStore.selectedHour) {
     alert('Por favor selecciona una fecha y hora');
     return;
   }
@@ -601,7 +600,51 @@ const scheduleAppointment = async () => {
       formattedDate: appointmentStore.formattedDate
     });
 
-    // Resto del código...
+    // 1. Obtener la referencia al documento del experto
+    const expertRef = doc(db, 'MockExperts', sysStore.getSelectedExpertUid);
+    const scheduleRef = collection(expertRef, 'Schedule');
+    
+    // 2. Obtener el documento de horario
+    const q = query(scheduleRef, where('userUid', '!=', sysStore.getSelectedExpertUid));
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      console.error('No se encontró el horario del experto');
+      return;
+    }
+
+    // 3. Obtener el documento y sus datos actuales
+    const docRef = querySnapshot.docs[0].ref;
+    const docData = querySnapshot.docs[0].data();
+    
+    // 4. Crear una copia del array days
+    const updatedDays = [...docData.days];
+    
+    // 5. Encontrar y actualizar el día específico
+    const dayIndex = updatedDays.findIndex(day => 
+      day.day.toLowerCase() === appointmentStore.dayName.toLowerCase()
+    );
+    
+    if (dayIndex !== -1) {
+      // 6. Crear un nuevo array de slots con la hora actualizada
+      updatedDays[dayIndex] = {
+        ...updatedDays[dayIndex],
+        slots: updatedDays[dayIndex].slots.map(slot => 
+          slot.hour === appointmentStore.selectedHour
+            ? { ...slot, takenBy: 'ID_DEL_USUARIO' }
+            : slot
+        )
+      };
+      
+      // 7. Actualizar el documento en Firebase
+      await updateDoc(docRef, { days: updatedDays });
+      console.log('Horario actualizado exitosamente');
+      
+      // 8. Opcional: Actualizar el estado local
+      // getDates(); // Si tienes una función para refrescar los datos
+    } else {
+      console.error('Día no encontrado en el horario');
+    }
   } catch (error) {
     console.error('Error al actualizar el horario en Firebase:', error);
   }
