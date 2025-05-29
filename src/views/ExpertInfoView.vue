@@ -13,10 +13,10 @@
             <div class="flex gap-4 items-center mb-6">
               <v-icon name="bi-person-badge" scale="1.5" class="text-emerald-600" />
               <div>
-                <h2 class="text-3xl font-semibold font-openSans text-slate-700">{{ expertStore().getExpertArea }}</h2>
+                <h2 class="text-3xl font-semibold font-openSans text-slate-700">{{ expertStore().expertArea }}</h2>
                 <p class="flex gap-3 items-center mt-1 text-lg text-gray-600">
                   <v-icon name="hi-solid-user-circle" class="text-gray-500" />
-                  {{ expertStore().getExpertName }}
+                  {{ expertStore().expertName }}
                 </p>
               </div>
             </div>
@@ -74,19 +74,32 @@
               Seleccione su horario preferido
             </h3>
             <!-- <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-7"> -->
-            <div class="flex overflow-auto justify-between">
-              <div v-for="(day, index) in availableTimeData[0].weeklySchedule" :key="index" class="animate-fade-up"
-                :style="{ animationDelay: `${index * 100}ms` }">
-                <DateSquare @click="getUserSelection(day, $event, index)" :day-info="day.dayInfo"
-                  :available-for-appointment="day.dayInfo.isDayAvailable" :available-hours="day.dayInfo.availableHours"
-                  :hours-taken="day.dayInfo.hoursTaken" :selected-day="userDateSelection"
-                  :selected-hour="userHourSelection" />
-              </div>
-            </div>
+              <div class="flex overflow-auto gap-2 justify-between">
+  <div 
+    v-for="(weekDay, index) in weekDays" 
+    :key="index" 
+    class="animate-fade-up"
+    :style="{ animationDelay: `${index * 100}ms` }"
+  >
+  <DateSquare 
+  v-if="availableTimeData[0]?.days"
+  @hour-selected="(hour) => getUserSelection(weekDay.day, hour, index)"
+  :day-info="{
+    day: weekDay.day,
+    dayNumber: weekDay.dateNumber,
+    availableDay: availableTimeData[0]?.days.find(d => d.day === weekDay.day)?.availableDay || false,
+    slots: availableTimeData[0]?.days.find(d => d.day === weekDay.day)?.slots || []
+  }" 
+  :available-for-appointment="availableTimeData[0]?.days.find(d => d.day === weekDay.day)?.availableDay || false" 
+  :selected-day="userDateSelection"
+  :selected-hour="userHourSelection" 
+/>
+  </div>
+</div>
           </section>
 
           <!-- Confirmación de cita mejorada -->
-          <article v-if="userDateSelection && userHourSelection"
+          <article 
             class="mt-8 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-xl">
             <div class="flex flex-col gap-6 items-center p-8 md:flex-row">
               <div class="flex-1">
@@ -94,20 +107,21 @@
                   <v-icon name="bi-calendar" class="text-white" />
                   <span>
                     Confirmación de cita -
-                    <span class="font-bold">{{ userDateSelection }} {{ userDayNumber }}</span>
-                    a las <span class="font-mono">{{ userHourSelection }}</span>
+                    <span class="font-bold">{{ useAppointmentStore().getFormattedDate }} </span>
+                   <span class="font-mono"> a las {{ useAppointmentStore().getSelectedHour }}hrs</span>
                   </span>
                 </h3>
                 <p class="mt-2 text-blue-100">
                   Por favor revise los detalles antes de confirmar
                 </p>
               </div>
-              <button @click="scheduleAppointment(userIndexSelection)"
-                class="flex items-center px-8 py-3 space-x-2 font-semibold text-blue-900 bg-white rounded-xl transition-all hover:bg-blue-50">
-                <v-icon name="bi-send-check" class="text-blue-600" />
-                <span>Confirmar cita</span>
-              </button>
+              <button @click="scheduleAppointment"
+        class="flex items-center px-8 py-3 space-x-2 font-semibold text-blue-900 bg-white rounded-xl transition-all hover:bg-blue-50">
+  <v-icon name="bi-send-check" class="text-blue-600" />
+  <span>Confirmar cita</span>
+</button>
             </div>
+            
           </article>
         </div>
       </section>
@@ -301,84 +315,8 @@ import { experts } from '@/store/experts';
 import expertStore from '@/store/expert';
 import systemStore from '@/store/system';
 import ExpertInfoCard from '@/components/Expert/ExpertInfoCard.vue';
+import { useAppointmentStore } from '@/store/appointment';
 
-
-const date = ref(new Date())
-
-
-// Función para bloquear todas las fechas excepto hoy
-const disableAllExceptToday = (inputDate: Date) => {
-  const today = new Date()
-
-  // Normalizamos ambas fechas para comparar solo día/mes/año (sin hora)
-  const input = new Date(inputDate.getFullYear(), inputDate.getMonth(), inputDate.getDate())
-  const current = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-
-  return input.getTime() !== current.getTime()
-}
-
-const availableTimeDataExample = [{
-  availableForAppointment: false,
-  weeklySchedule: [
-    {
-      dayInfo: {
-        isDayAvailable: false,
-        day: 'Lunes',
-        availableHours: ['10:30', '11:00', '12:00', '13:00', '14:30', '15:00', '16:00', '17:00'],
-        hoursTaken: ['10:00', '11:00']
-      }
-    },
-    {
-      dayInfo: {
-        isDayAvailable: false,
-        day: 'Martes',
-        availableHours: ['10:00', '11:00', '12:00', '13:00', '14:30', '15:00', '16:00', '17:00'],
-        hoursTaken: ['10:00', '11:00']
-      }
-    },
-    {
-      dayInfo: {
-        isDayAvailable: false,
-        day: 'Miércoles',
-        availableHours: ['10:00', '11:00', '12:00', '13:00', '14:30', '15:00', '16:00', '17:00'],
-        hoursTaken: ['14:30', '12:00']
-      }
-    },
-    {
-      dayInfo: {
-        isDayAvailable: false,
-        day: 'Jueves',
-        availableHours: ['10:00', '11:00', '12:00', '13:00', '14:30', '15:00', '16:00', '17:00'],
-        hoursTaken: ['10:30', '11:00']
-      }
-    },
-    {
-      dayInfo: {
-        isDayAvailable: false,
-        day: 'Viernes',
-        availableHours: ['10:00', '11:00', '12:00', '13:00', '14:30', '15:00', '16:00', '17:00'],
-        hoursTaken: ['10:30', '11:00']
-      }
-    },
-    {
-      dayInfo: {
-        isDayAvailable: false,
-        day: 'Sábado',
-        availableHours: ['10:00', '11:00', '12:00', '13:00', '14:30', '15:00', '16:00', '17:00'],
-        hoursTaken: ['10:30', '11:00']
-      }
-    },
-    {
-      dayInfo: {
-        isDayAvailable: false,
-        day: 'Domingo',
-        availableHours: ['10:00', '11:00', '12:00', '13:00', '14:30', '15:00', '16:00', '17:00'],
-        hoursTaken: ['10:00', '11:00']
-      }
-    }
-  ],
-
-}]
 
 const sysStore = systemStore()
 
@@ -400,7 +338,7 @@ const getDates = async () => {
   try {
     // 1. Obtener datos de Firebase
     const querySnapshot = await getDocs(collectionMockExperts);
-    const docData = querySnapshot.docs[0]?.data() as IDateRoot;
+    const docData = querySnapshot.docs[0]?.data();
     if (!docData?.weeklySchedule) return;
 
     const today = new Date();
@@ -442,6 +380,7 @@ const getDates = async () => {
       weeklySchedule: currentWeekSchedule
     }];
 
+    console.log(availableTimeData.value);
   } catch (error) {
     console.error('Error al obtener fechas:', error);
   } finally {
@@ -550,22 +489,12 @@ const userDayNumber = ref();
 const userMonth = ref();
 const newDate = new Date().toLocaleString('es-ES', { month: 'long' });
 //Function to set the user selection (hour, date)
-const getUserSelection = (day, val, index) => {
-
-  userIndexSelection.value = index;
-
-  //Set the value as prop
-  availableHours.value = day.dayInfo.hoursTaken;
-  //Verification if user clicks in a different place that is not the permitted area
-  if (val.target.id != 'hourArea') return;
-  userDateSelection.value = day.dayInfo.day;
-  console.log(userDateSelection.value);
-  userHourSelection.value = val.target.innerText;
-  console.log(userHourSelection.value)
-  userDayNumber.value = day.dayInfo.dayNumber;
-  console.log(val.target.id);
-  userMonth.value = day.dayInfo.monthName;
-}
+const getUserSelection = (day: string, hour: string, index: number) => {
+  console.log('Selección:', { day, hour, index });
+  userDateSelection.value = day;
+  userHourSelection.value = hour;
+  // Aquí puedes agregar cualquier lógica adicional
+};
 
 const resetUserSelection = () => {
   userDateSelection.value = '';
@@ -656,61 +585,27 @@ const addFutureAppointment = async () => {
 
 
 //Schedule appointment to the expert collection and call addFutureAppointment to add the appointment to the client collection (if user has an appointment scheduled with this expert, do not allow to schedule another one)
-const scheduleAppointment = async (index: number) => {
+const scheduleAppointment = async () => {
+  const appointmentStore = useAppointmentStore();
 
-  // if (!authStore().getIsAuth) {
-  //   alert('Por favor, inicia sesión para continuar');
-  //   return;
-  // }
-  if (userHasScheduled.value) {
-    alert('Ya tiene una cita programada con este experto, no puede programar otra, hasta que no se realice la cita');
+  
+    if (!appointmentStore.dayName || !appointmentStore.selectedHour) {
+    alert('Por favor selecciona una fecha y hora');
     return;
   }
-  if (!availableTimeData.value) {
-    alert('No se encontraron datos de citas disponibles');
-    return;
-  }
-  const weeklyScheduleUpdated = JSON.parse(JSON.stringify(availableTimeData.value[0]))
-  //Verifying the hour is not already taken
-  if (weeklyScheduleUpdated.weeklySchedule[index].dayInfo.hoursTaken.includes(userHourSelection.value)) {
-    alert('Por favor, selecciona una hora disponible');
-    return;
-  }
-  console.log(weeklyScheduleUpdated); //Now push the hour to the hoursTaken array
-
-  if (weeklyScheduleUpdated.weeklySchedule[index].dayInfo.hoursTaken.includes(userHourSelection.value)) {
-    alert('Por favor, selecciona una hora disponible');
-    return;
-  }
-  weeklyScheduleUpdated.weeklySchedule[index].dayInfo.hoursTaken.push(userHourSelection.value);
-
-  console.log(weeklyScheduleUpdated);
-
 
   try {
-    //Vaidation goes here
-    // Actualizar Firebase
-    arrayToUpdate.value = weeklyScheduleUpdated;
-    const collectionMockExperts = collection(db, `MockExperts/${sysStore.getSelectedExpertUid}/Schedule`);
-    const qGetMockExpertSchedule = query(collectionMockExperts, where('userUid', '==', sysStore.getSelectedExpertUid));
-    const docSnapshot = await getDocs(qGetMockExpertSchedule);
-    if(docSnapshot.empty) {
-      console.log('There are no data available to fetch');
-      return;
-    }
-    if(docSnapshot.docs.length > 0) {
-      const docRef = doc(collectionMockExperts);
-      updateDoc(docRef, arrayToUpdate.value);
-    }
-    getDates();
-    console.log('Appointment scheduled successfully');
+    console.log('Programando cita para:', {
+      day: appointmentStore.dayName,
+      hour: appointmentStore.selectedHour,
+      formattedDate: appointmentStore.formattedDate
+    });
 
-    addFutureAppointment()
-    getClientAppointments()
+    // Resto del código...
   } catch (error) {
-    console.log(error);
+    console.error('Error al actualizar el horario en Firebase:', error);
   }
-}
+};
 
 interface ITimestamp {
   seconds: number;
@@ -755,9 +650,170 @@ const getExpertInfo = async () => { //V2
   }
 }
 
+
 onMounted(() => {
   getExpertInfo();
 })
+
+const getSchedulesFromAllExperts = async () => {
+  try {
+    // 1. Obtener todos los expertos
+    const expertsSnapshot = await getDocs(collection(db, 'MockExperts'));
+    
+    // 2. Para cada experto, obtener su Schedule
+    const schedulesPromises = expertsSnapshot.docs.map(async (expertDoc) => {
+      const scheduleSnapshot = await getDocs(collection(db, `MockExperts/${expertDoc.id}/Schedule`));
+      return {
+        expertId: expertDoc.id,
+        schedules: scheduleSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+      };
+    });
+
+    // 3. Esperar a que todas las consultas se completen
+    const allSchedules = await Promise.all(schedulesPromises);
+    return allSchedules;
+  } catch (error) {
+    console.error("Error al obtener los horarios:", error);
+    throw error;
+  }
+};
+
+// Uso
+onMounted(() => {
+  getSchedulesFromAllExperts();
+})
+
+const transformAndUpdateSchedules = async () => {
+  try {
+    console.log('Iniciando actualización de horarios...');
+    
+    // 1. Obtener todos los expertos
+    const expertsSnapshot = await getDocs(collection(db, 'MockExperts'));
+    console.log(`Encontrados ${expertsSnapshot.size} expertos`);
+    
+    // 2. Para cada experto, actualizar su Schedule
+    for (const expertDoc of expertsSnapshot.docs) {
+      const expertId = expertDoc.id;
+      console.log(`Procesando experto: ${expertId}`);
+      
+      const scheduleRef = collection(db, `MockExperts/${expertId}/Schedule`);
+      const scheduleSnapshot = await getDocs(scheduleRef);
+      console.log(`Encontrados ${scheduleSnapshot.size} documentos de horario`);
+
+      for (const doc of scheduleSnapshot.docs) {
+        try {
+          const oldData = doc.data();
+          console.log('Datos antiguos:', JSON.stringify(oldData, null, 2));
+          
+          // Verificar si weeklySchedule existe
+          if (!oldData.weeklySchedule || !Array.isArray(oldData.weeklySchedule)) {
+            console.error('El formato de datos no es el esperado (weeklySchedule no encontrado o no es un array)');
+            continue;
+          }
+
+          // Mapear días de la semana
+          const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+          
+          // Crear nuevo formato
+          const newSchedule = daysOfWeek.map(dayName => {
+            const dayData = oldData.weeklySchedule.find(item => 
+              item?.dayInfo?.day === dayName
+            );
+            
+            // Si no existe el día en los datos viejos, crear uno por defecto
+            if (!dayData) {
+              return {
+                day: dayName,
+                availableDay: true,
+                slots: [
+                  { hour: "10:00", takenBy: null },
+                  { hour: "11:00", takenBy: null },
+                  { hour: "12:00", takenBy: null },
+                  { hour: "13:00", takenBy: null },
+                  { hour: "14:30", takenBy: null },
+                  { hour: "15:00", takenBy: null },
+                  { hour: "16:00", takenBy: null },
+                  { hour: "17:00", takenBy: null }
+                ]
+              };
+            }
+            
+            // Mapear horas tomadas
+            const hoursTaken = new Set(dayData.dayInfo.hoursTaken || []);
+            const availableHours = dayData.dayInfo.availableHours || [];
+            
+            return {
+              day: dayName,
+              availableDay: !dayData.dayInfo.isDayAvailable,
+              slots: availableHours.map(hour => ({
+                hour,
+                takenBy: hoursTaken.has(hour) ? null : null
+              }))
+            };
+          });
+          
+          // Actualizar el documento
+          console.log('Nuevo formato:', JSON.stringify(newSchedule, null, 2));
+          await updateDoc(doc.ref, { 
+            ...oldData, // Mantener los datos existentes
+            days: newSchedule
+          });
+          console.log('Documento actualizado exitosamente');
+          
+        } catch (docError) {
+          console.error(`Error procesando documento ${doc.id}:`, docError);
+        }
+      }
+    }
+    
+    console.log('Proceso completado');
+    return true;
+  } catch (error) {
+    console.error('Error general:', error);
+    return false;
+  }
+};
+const getDayNumber = (dayName: string): number => {
+  const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  return days.indexOf(dayName) + 1; // o la lógica que necesites
+};
+// En ExpertInfoView.vue
+const getWeekDays = () => {
+  const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const today = new Date();
+  const currentDay = today.getDay(); // 0 (Domingo) a 6 (Sábado)
+  
+  // Reordenar el array para que empiece por el día actual
+  const reorderedDays = [
+    ...days.slice(currentDay),
+    ...days.slice(0, currentDay)
+  ];
+  
+  // Crear array de los próximos 7 días
+  return reorderedDays.map((day, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() + index);
+    return {
+      day,
+      dateNumber: date.getDate(),
+      fullDate: date
+    };
+  });
+};
+
+// En tu data o setup
+const weekDays = ref(getWeekDays());
+
+
+
+const handleHourSelected = (hour: string, day: string) => {
+  console.log('Hora seleccionada en el padre:', { hour, day });
+  userDateSelection.value = day;
+  userHourSelection.value = hour;
+  
+  // Aquí puedes agregar cualquier lógica adicional que necesites
+  // como actualizar el estado de la cita, mostrar un resumen, etc.
+};
 </script>
 
 <style scoped></style>

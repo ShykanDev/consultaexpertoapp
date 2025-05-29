@@ -61,3 +61,7 @@ Implementar la lógica de cambio de estado
 Actualizar las reglas de seguridad de Firestore
 Modificar la interfaz para mostrar claramente el estado
 Implementar la sincronización en tiempo real de los cambios de estado
+
+
+//Changes to do 
+//Update Firebase Structure
