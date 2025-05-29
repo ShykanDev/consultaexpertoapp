@@ -103,8 +103,10 @@ addIcons(FaFlag, RiZhihuFill, BiClipboard2CheckFill,
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { createPinia } from 'pinia';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -135,3 +137,4 @@ const app = createApp(App)
 router.isReady().then(() => {
   app.mount('#app');
 });
+

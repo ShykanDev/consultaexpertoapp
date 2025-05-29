@@ -21,5 +21,6 @@ export const authStore = defineStore('auth', {
         getUserName: (state) => state.userName,
         getUserUid: (state) => state.userUid,
         getIsAuth: (state) => state.isAuth,
-    }
+    },
+    persist:true
 })

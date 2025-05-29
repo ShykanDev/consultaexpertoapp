@@ -9,6 +9,9 @@
     <section v-if="isLoading" class="flex fixed top-0 right-0 bottom-0 left-0 z-50 justify-center items-center bg-black/45"> <!-- Loader -->
       <LoaderBlue  />
     </section>
+    <section>
+      <button @click="goToExpertsList">Regresar</button>
+    </section>
       <!-- Sección principal mejorada -->
       <section class="py-12 bg-gradient-to-b from-gray-50 to-white">
         <div class="container px-4 mx-auto max-w-7xl">
@@ -203,10 +206,10 @@
 
 <script setup lang="ts">
 import { computed, onMounted, } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent,  } from '@ionic/vue';
 
 import { ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 
@@ -582,6 +585,8 @@ const addFutureAppointment = async () => {
       }
       await addDoc(clientCollectionFutureAppointments, FutureAppointment);
     }
+    console.log('Future appointment added successfully');
+    
   } catch (error) {
     console.log(error);
   }
@@ -589,6 +594,24 @@ const addFutureAppointment = async () => {
 
 
 //Schedule appointment to the expert collection and call addFutureAppointment to add the appointment to the client collection (if user has an appointment scheduled with this expert, do not allow to schedule another one)
+const addAppointmentToClient = async() => {
+  try {
+ //Get the user subcollection that'll match the uid from pinia
+ const usersCollection = collection(db, `users/${authStore().getUserUid}/FutureAppointments`);
+ await addDoc(usersCollection, {
+   hour: useAppointmentStore().selectedHour,
+   day: useAppointmentStore().dayName,
+   formattedDate: useAppointmentStore().formattedDate,
+   expertUid: sysStore.getSelectedExpertUid,
+   userId: authStore().getUserUid,
+   createdAt: Timestamp.now(),
+ })
+ console.log('Cita agregada exitosamente');
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 const scheduleAppointment = async () => {
   const appointmentStore = useAppointmentStore();
   
@@ -647,9 +670,11 @@ const scheduleAppointment = async () => {
       
       // 8. Opcional: Actualizar el estado local
       //reset to default values
+      addAppointmentToClient();
       appointmentStore.setAppointment('', '', '')
 
       getDates(); // Si tienes una función para refrescar los datos
+
     } else {
       console.error('Día no encontrado en el horario');
     }
@@ -866,6 +891,15 @@ const handleHourSelected = (hour: string, day: string) => {
   
   // Aquí puedes agregar cualquier lógica adicional que necesites
   // como actualizar el estado de la cita, mostrar un resumen, etc.
+};
+
+
+//button to go back
+const router = useRouter();
+
+const goToExpertsList = async () => {
+  await router.push('/tabs/experts-list');
+  window.location.reload();
 };
 </script>
 

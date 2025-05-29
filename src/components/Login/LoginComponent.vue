@@ -148,6 +148,7 @@ import { getAuth, sendPasswordResetEmail, signInWithEmailAndPassword } from 'fir
 import { authStore } from '@/store/auth';
 import { collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
 import LoaderMultipleDots from '@/animations/LoaderMultipleDots.vue';
+import clientStore from '@/store/client';
 
 const email = ref('');
 const password = ref('');
@@ -203,6 +204,7 @@ const login = async () => {
         //User is not expert, so we push to the expert list view and set the user name and uid in the store
       //  authStore().setUserName(user.user.displayName);
         authStore().setUserUid(user.user.uid);
+        clientStore().setClientUid(user.user.uid);
         router.push('/tabs/experts-list');
         console.log('el usuario no es experto');
         

@@ -67,6 +67,7 @@ Implementar la sincronización en tiempo real de los cambios de estado
 1. Agregar Collection de Usuarios que son expertos (email), la collection será llamada "EmailsExperts" [Done ✔]
 2. Cuando el usuario inicie sesion con email, el app debe buscar si el email está en la collection "EmailsExperts", si está, el usuario es un experto y se le redirige a la vista de detalles del experto, si no está, el usuario es un cliente y se le redirige a la vista de lista de expertos.[Done ✔]
 //TODO Borrar todas las cuentas de Firebase para empezar con la gestion de citas desde 0
+
 3. Si el usuario no esta logeado e intenta acceder a la vista de detalles del experto, la app lo redirigirá a la vista de login.
 4. En el caso de que sea cliente la app lo redirigirá a la lista de expertos y se le pedirá que elija un experto, una vez seleccionado el experto, la app guardará el UID del experto en el store
 5. Siendo el usuario cliente, cuando el cliente seleccione un experto, la app verificará si tiene citas agendadas en base a los resultados de firebase en el onMounted que obtiene los datos del experto seleccionado se debe verificar si el UID del cliente esta incluido en alguna key (takenBy) de los documentos de citas, si está, el usuario no puede agendar una cita.

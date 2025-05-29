@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="animate-fade-up">
+<ion-content class="animate-fade-up animate-duration-100">
   <!-- Hero Section -->
   <section class="py-16 text-white bg-gradient-to-r from-emerald-500 to-teal-700">
     <div class="container px-6 mx-auto text-center">
@@ -502,6 +502,7 @@ const gettingMockExperts = async () => {
     
   }
 }
+
 
 
 </script>
