@@ -10,7 +10,6 @@
       <LoaderBlue  />
     </section>
     <section>
-      <button @click="goToExpertsList">Regresar</button>
     </section>
       <!-- Sección principal mejorada -->
       <section class="py-12 bg-gradient-to-b from-gray-50 to-white">
@@ -37,19 +36,7 @@
               </div>
             </div>
             <!-- Estado de disponibilidad mejorado -->
-            <div v-if="isAvailable" class="p-6 bg-emerald-50 rounded-lg">
-              <div class="flex flex-col gap-4 items-start md:flex-row md:items-center">
-                <div class="flex gap-3 items-center">
-                  <v-icon name="bi-check-circle" class="text-2xl text-emerald-600 animate-pulse" />
-                  <span class="text-lg font-semibold text-emerald-700">Disponible para prueba gratuita</span>
-                </div>
-                <a href="#"
-                  class="flex items-center px-6 py-3 space-x-2 font-medium text-white bg-emerald-600 rounded-xl transition-all transform hover:bg-emerald-700 hover:shadow-lg">
-                  <v-icon name="bi-calendar-plus" class="text-lg" />
-                  <span>Agendar prueba gratuita</span>
-                </a>
-              </div>
-            </div>
+        
 
             <!-- Sección de citas existentes -->
             <section v-if="clientStore().getClientUid && userAppointmentsFb.length > 0"
@@ -63,11 +50,7 @@
                     {{ userAppointmentsFb[0].month }} {{ userAppointmentsFb[0].year }}
                   </h3>
                 </div>
-                <RouterLink :to="{ name: 'user' }"
-                  class="flex items-center px-4 py-2 space-x-2 text-indigo-700 bg-white rounded-lg shadow-sm">
-                  <v-icon name="bi-eye" />
-                  <span>Ver detalles</span>
-                </RouterLink>
+               
               </div>
             </section>
           </div>
@@ -142,33 +125,27 @@
                 <v-icon name="bi-patch-question" class="text-blue-600" />
                 Servicios profesionales
               </h2>
-              <div class="grid gap-6 md:grid-cols-2">
-                <div v-for="(item, index) in offersLeft" :key="index"
-                  class="flex gap-3 items-start p-4 bg-gray-50 rounded-lg">
-                  <v-icon :name="item.icon" class="flex-shrink-0 mt-1 text-blue-600" />
-                  <p class="leading-relaxed text-gray-700">{{ item.text }}</p>
-                </div>
-              </div>
+          
             </div>
 
             <!-- Formulario de contacto mejorado -->
             <div class="p-8 bg-white rounded-xl ring-1 ring-gray-100 shadow-lg">
               <div class="flex gap-3 items-center mb-8">
-                <v-icon name="bi-chat-dots" class="text-2xl text-emerald-600" />
+           
                 <h2 class="text-2xl font-bold text-gray-900">Formulario de contacto</h2>
               </div>
 
               <!-- Sección de adjuntos mejorada -->
               <div class="mb-8">
                 <label class="block mb-4 text-lg font-medium text-gray-700">
-                  <v-icon name="bi-paperclip" class="mr-2" />
+                  
                   Adjuntar documentos
                 </label>
                 <div
                   class="relative rounded-xl border-2 border-gray-300 border-dashed transition-colors hover:border-emerald-500">
                   <input type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   <div class="flex flex-col justify-center items-center p-8 text-center">
-                    <v-icon name="bi-cloud-upload" class="mb-4 text-4xl text-gray-400" />
+             
                     <p class="text-gray-500">Arrastra archivos o haz clic para subir</p>
                     <p class="mt-2 text-sm text-gray-400">Formatos soportados: PDF, JPG, PNG (hasta 5MB)</p>
                   </div>
@@ -221,94 +198,32 @@ console.log(route.params.name);
 const props = defineProps({
   title: {
     type: String,
-    default: 'Profesionales y Expertos en CONTADURÍA'
+    default: 'Profesionales y Expertos en CONTADURÍA',
+    required: false
   },
   area: {
     type: String,
-    default: 'Ciencias Sociales'
+    default: 'Ciencias Sociales',
+    required: false
   },
-  availableDay: {
-    type: String,
-    default: 'Tue'
-  },
-  availableHourStart: {
-    type: Number,
-    default: 10
-  },
-  availableHourEnd: {
-    type: Number,
-    default: 14
-  },
+
+
   expertType: {
     type: String,
     default: 'Contadores'
   },
-  description: {
-    type: String,
-    default:
-      'Los Contadores trabajan tanto para el sector público, como para el privado y son aquellos profesionales responsables del estado financiero y de los libros contables del individuo o empresa que haya solicitado sus servicios, en tal sentido, su misión consiste en velar que su clientela cumpla con la legislación aplicable y con los procedimientos establecidos, además de garantizar que haya registro de los ingresos y egresos de sus cuentas.'
-  },
-  offersLeft: {
-    type: Array,
-    default: () => [
-      { icon: 'fas fa-file-alt', text: 'Documentar informes financieros para los clientes' },
-      { icon: 'fas fa-book', text: 'Revisar los libros contables de los clientes.' },
-      { icon: 'fas fa-chart-bar', text: 'Analizar las ganancias y los gastos.' },
-      { icon: 'fas fa-balance-scale', text: 'Elaborar el balance de los libros financieros.' },
-      { icon: 'fas fa-pen-nib', text: 'Redactar informes sobre el estado financiero de sus clientes.' }
-    ]
-  },
-  offersRight: {
-    type: Array,
-    default: () => [
-      { icon: 'fas fa-file-excel', text: 'Manejar registros, sistemas y presupuestos financieros.' },
-      { icon: 'fas fa-user-tie', text: 'Hacer auditorías financieras para sus clientes.' },
-      { icon: 'fas fa-tasks', text: 'Brindar asesoría financiera y tributaria.' },
-      { icon: 'fas fa-glasses', text: 'Examinar las cuentas y registros financieros.' },
-      { icon: '', text: 'Y mucho más' }
-    ]
-  },
-  categories: {
-    type: Array,
-    default: () => [
-      { name: 'Contador', link: '#', active: true },
-      { name: 'Asesorías Legales', link: './c-abogados.php', active: false },
-      { name: 'Arquitecto', link: './c-arquitectos.php', active: false },
-      { name: 'Importación y Exportación', link: './c-comercio.php', active: false },
-      { name: 'Doctor', link: './c-doctores.php', active: false },
-      { name: 'Gestoría en trámites', link: './c-gestorias.php', active: false },
-      { name: 'Ingeniería Computacional', link: './c-computacion.php', active: false },
-      { name: 'Marketing', link: './c-marketing.php', active: false },
-      { name: 'Peritaje', link: './c-peritaje.php', active: false },
-      { name: 'Publicidad', link: './c-publicidad.php', active: false },
-      { name: 'Servicios Web', link: './c-web.php', active: false },
-      { name: 'Traductor', link: './c-traductores.php', active: false }
-    ]
-  },
+
+
   dataInfo: {
     type: Object,
-    required: true
+    required: false
   },
-  proffession: {
-    type: String,
-    required: true,
-    default: 'Contador'
-  }
+
 });
 
 
 // Computed para determinar la disponibilidad según la fecha y hora actual
-const isAvailable = computed(() => {
-  const now = new Date();
-  const dayOptions = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const currentDay = dayOptions[now.getDay()];
-  const currentHour = now.getHours();
-  return (
-    currentDay === props.availableDay &&
-    currentHour >= props.availableHourStart &&
-    currentHour < props.availableHourEnd
-  );
-});
+
 
 
 
@@ -327,7 +242,7 @@ import LoaderBlue from '@/animations/LoaderBlue.vue';
 
 const sysStore = systemStore()
 
-const availableTimeData = ref<IDateRoot[]>()
+const availableTimeData = ref<any>()
 //Function to select the user date and hour
 
 //Firebase Stuff
@@ -712,21 +627,20 @@ interface IExpert {
 const expertInfo = ref<IExpert[]>([]);
 const mockExpertInfoCollection = collection(db, 'MockExperts');
 const qGetMockExpertInfo = query(mockExpertInfoCollection, where('userUid', '==', sysStore.getSelectedExpertUid));
-const getExpertInfo = async () => { //V2
-  expertInfo.value = [];
+const getExpertInfo = async () => {
   try {
     const expertSnapshot = await getDocs(qGetMockExpertInfo);
-    if(expertSnapshot.empty) {
-      console.log('There are no data available to fetch');
+    if (expertSnapshot.empty) {
+      console.log('No se encontró información del experto');
+      expertInfo.value = [];
       return;
     }
-    const expertData = expertSnapshot.docs.map((doc) => doc.data() as IExpert);
-    console.log(expertData);
-    expertInfo.value = expertData;
+    expertInfo.value = expertSnapshot.docs.map(doc => doc.data() as IExpert);
   } catch (error) {
-    console.log(error);
+    console.error('Error en getExpertInfo:', error);
+    expertInfo.value = [];
   }
-}
+};
 
 
 onMounted(() => {
@@ -894,13 +808,8 @@ const handleHourSelected = (hour: string, day: string) => {
 };
 
 
-//button to go back
-const router = useRouter();
 
-const goToExpertsList = async () => {
-  await router.push('/tabs/experts-list');
-  window.location.reload();
-};
+
 </script>
 
 <style scoped></style>

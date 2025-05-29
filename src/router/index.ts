@@ -76,7 +76,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/expert-info',
     component: () => import('@/views/ExpertInfoView.vue'),
     meta:{
-      requiresAuth: true
+      requiresAuth: false
     }
   }
 ]

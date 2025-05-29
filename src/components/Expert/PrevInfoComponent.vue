@@ -87,11 +87,19 @@ const sysStore = systemStore();
   
   // ion routing to expert schedule view
   const router = useRouter();
-  const viewSchedule = () => {
-    //Add the expert UID to the system store (this value will be used to get the expert schedule from Firebase in the ExpertInfoView)
+  const viewSchedule = async () => {
+  try {
+    if (!props.expertUid) {
+      console.error('No expert UID provided');
+      return;
+    }
+    
     sysStore.setSelectedExpertUid(props.expertUid);
-    router.push('/expert-info');
-  };
+    await router.push('/expert-info');
+  } catch (error) {
+    console.error('Navigation error:', error);
+  }
+};
   </script>
   
   <style scoped>
