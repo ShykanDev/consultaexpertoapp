@@ -13,8 +13,8 @@
           isHourSelected(slot.hour) 
             ? 'bg-blue-500 text-white' 
             : isSlotAvailable(slot)
-              ? 'bg-gray-100 hover:bg-gray-200'
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              ? 'bg-blue-50 hover:bg-blue-100 hover:border-blue-700 hover:border'
+              : 'bg-gray-100 text-gray-400 line-through italic cursor-not-allowed'
         ]"
       >
         {{ slot.hour }}

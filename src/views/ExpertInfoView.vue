@@ -6,6 +6,9 @@
         <ion-title class="text-2xl font-bold text-center">Agendar Cita</ion-title>
       </ion-toolbar>
     </ion-header>
+    <section v-if="isLoading" class="flex fixed top-0 right-0 bottom-0 left-0 z-50 justify-center items-center bg-black/45"> <!-- Loader -->
+      <LoaderBlue  />
+    </section>
       <!-- Sección principal mejorada -->
       <section class="py-12 bg-gradient-to-b from-gray-50 to-white">
         <div class="container px-4 mx-auto max-w-7xl">
@@ -316,6 +319,7 @@ import expertStore from '@/store/expert';
 import systemStore from '@/store/system';
 import ExpertInfoCard from '@/components/Expert/ExpertInfoCard.vue';
 import { useAppointmentStore } from '@/store/appointment';
+import LoaderBlue from '@/animations/LoaderBlue.vue';
 
 
 const sysStore = systemStore()
@@ -594,6 +598,7 @@ const scheduleAppointment = async () => {
   }
 
   try {
+    isLoading.value = true;
     console.log('Programando cita para:', {
       day: appointmentStore.dayName,
       hour: appointmentStore.selectedHour,
@@ -641,12 +646,17 @@ const scheduleAppointment = async () => {
       console.log('Horario actualizado exitosamente');
       
       // 8. Opcional: Actualizar el estado local
-      // getDates(); // Si tienes una función para refrescar los datos
+      //reset to default values
+      appointmentStore.setAppointment('', '', '')
+
+      getDates(); // Si tienes una función para refrescar los datos
     } else {
       console.error('Día no encontrado en el horario');
     }
   } catch (error) {
     console.error('Error al actualizar el horario en Firebase:', error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
