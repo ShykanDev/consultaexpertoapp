@@ -194,10 +194,10 @@ const login = async () => {
       if (isExpert) {
         authStore().setIsAuth(true);
         authStore().setUserUid(user.user.uid);
-        //authStore().setUserName(user.user.displayName);
+        authStore().setUserName(user.user.displayName || '');
+        authStore().setUserEmail(user.user.email);
         console.log('el usuario es experto');
-        alert('el usuario es experto');
-        alert('La accion futura será implementar la vista de detalles del experto')
+        router.push('/expert');
       }
       if (!isExpert) {
         authStore().setIsAuth(true);
