@@ -1,20 +1,24 @@
 <template>
-  <div class="p-4 rounded-lg border">
-    <h3 class="font-semibold">{{ dayInfo.day }}</h3>
-    <p class="text-gray-500">{{ getFormattedDate() }}</p>
+  <div class="p-6 bg-white rounded-2xl border-[1px] border-slate-200 shadow-sm hover:border-blue-600 ">
+    <h3 class="flex gap-2 items-center text-xl font-bold text-slate-700">
+  <v-icon name="bi-calendar2-minus" class="text-blue-600" />
+  {{ dayInfo.day }}
+</h3>
+
+    <p class="inline-block px-2 py-1 text-sm font-semibold text-white bg-blue-600 rounded-full">{{ getFormattedDate() ? index == 0 ? 'Hoy' : getFormattedDate() : 'Hoy'  }}</p>
     
-    <div class="mt-4 space-y-2">
+    <div class="mt-6 space-y-3">
       <button
         v-for="slot in dayInfo.slots"
         :key="slot.hour"
         @click="selectHour(slot.hour)"
         :class="[
-          'w-full py-2 rounded',
-          isHourSelected(slot.hour) 
-            ? 'bg-blue-500 text-white' 
+          'w-full py-2 px-4 rounded-xl text-sm font-medium transition-all duration-200',
+          isHourSelected(slot.hour)
+            ? 'bg-blue-600 text-white shadow-md'
             : isSlotAvailable(slot)
-              ? 'bg-blue-50 hover:bg-blue-100 hover:border-blue-700 hover:border'
-              : 'bg-gray-100 text-gray-400 line-through italic cursor-not-allowed'
+              ? 'bg-blue-50 text-blue-700 hover:bg-blue-100 hover:border hover:border-blue-300'
+              : 'bg-gray-100 text-gray-400 italic line-through cursor-not-allowed'
         ]"
       >
         {{ slot.hour }}
@@ -23,12 +27,17 @@
   </div>
 </template>
 
+
 <script setup>
 import { useAppointmentStore } from '@/store/appointment';
 
 const props = defineProps({
   dayInfo: {
     type: Object,
+    required: true
+  },
+  index: {
+    type: Number,
     required: true
   }
 });

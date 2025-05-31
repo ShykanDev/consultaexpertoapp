@@ -58,99 +58,47 @@
         <ContentLoader />
       </section>
       <!-- Contenido principal -->
-      <div v-else class="px-4 mx-auto -mt-10 max-w-6xl ion-padding">
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <!-- Columna izquierda - Información básica -->
-          <div class="space-y-6">
-            <div class="p-6 bg-white rounded-xl shadow-sm">
-              <h2 class="flex items-center mb-4 text-xl font-bold text-gray-800">
-                <v-icon name="md-info" class="mr-2 text-indigo-600" />
-                Información básica
-              </h2>
-              
-              <div class="space-y-4">
-                <div>
-                  <p class="text-sm text-gray-500">Correo electrónico</p>
-                  <p class="font-medium">{{ data.email }}</p>
-                </div>
-                
-                <div>
-                  <p class="text-sm text-gray-500">Cédula profesional</p>
-                  <p class="font-medium">{{ data.profesionalId }}</p>
-                </div>
-                
-                <div>
-                  <p class="text-sm text-gray-500">Miembro desde</p>
-                  <p class="font-medium">{{ data.formattedDate }}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="p-6 bg-white rounded-xl shadow-sm">
-              <h2 class="flex items-center mb-4 text-xl font-bold text-gray-800">
-                <v-icon name="md-workspaces-filled" class="mr-2 text-indigo-600" />
-                Especialidades
-              </h2>
-              <div class="flex flex-wrap gap-2">
-                <span v-for="(skill, index) in data.specialty.split(',')" :key="index" 
-                      class="px-3 py-1 text-sm text-indigo-800 bg-indigo-100 rounded-full">
-                  {{ skill }}
-                </span>
-              </div>
-            </div>
+      <div v-else class="px-2 mx-auto -mt-6 max-w-6xl ion-padding">
+  <div class="grid grid-cols-2 gap-3 md:gap-6 md:grid-cols-3">
+    <!-- Columna izquierda - Información básica -->
+    <div class="space-y-3 md:space-y-6">
+      <div class="flex flex-col p-3 bg-white rounded-xl shadow-sm md:p-6">
+        <h2 class="flex items-center mb-2 text-lg font-bold text-gray-800 md:mb-4 md:text-xl">
+          <v-icon name="md-info" class="mr-2 text-indigo-600" />
+          Información básica
+        </h2>
+        <div class="space-y-2 md:space-y-4">
+         
+          <div>
+            <p class="text-xs text-gray-500 md:text-sm">Cédula profesional</p>
+            <p class="text-sm md:font-medium">{{ data.profesionalId }}</p>
           </div>
-          
-          <!-- Columna central - Biografía -->
-          <div class="space-y-6 md:col-span-2">
-            <div class="p-6 bg-white rounded-xl shadow-sm">
-              <h2 class="flex items-center mb-4 text-xl font-bold text-gray-800">
-                <v-icon name="bi-person-lines-fill" class="mr-2 text-indigo-600" />
-                Sobre mí
-              </h2>
-              <p class="leading-relaxed text-gray-700">
-                {{ data.bio }}
-              </p>
-            </div>
-            
-            <div class="p-6 bg-white rounded-xl shadow-sm">
-              <h2 class="flex items-center mb-4 text-xl font-bold text-gray-800">
-                <v-icon name="bi-graph-up" class="mr-2 text-indigo-600" />
-                Estadísticas
-              </h2>
-              
-              <div class="grid grid-cols-2 gap-4 md:grid-cols-3">
-                <div class="p-4 text-center bg-blue-50 rounded-lg">
-                  <p class="text-2xl font-bold text-indigo-700">{{ data.experienceYears }}+</p>
-                  <p class="text-sm text-gray-600">Años de experiencia</p>
-                </div>
-                
-                <div class="p-4 text-center bg-blue-50 rounded-lg">
-                  <p class="text-2xl font-bold text-indigo-700">{{ data.completedSessions }}</p>
-                  <p class="text-sm text-gray-600">Sesiones completadas</p>
-                </div>
-                
-                <div class="p-4 text-center bg-blue-50 rounded-lg">
-                  <p class="text-2xl font-bold text-indigo-700">{{ data.rating }} <v-icon name="io-star" class="mr-1 text-indigo-600" /></p>
-                  <p class="text-sm text-gray-600">({{ data.totalRatings }} reseñas)</p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="hidden p-6 bg-white rounded-xl shadow-sm">
-              <h2 class="flex items-center mb-4 text-xl font-bold text-gray-800">
-                <v-icon name="bi-chat-square-text" class="mr-2 text-indigo-600" />
-                Reseñas recientes
-              </h2>
-              <!-- Aquí irían componentes de reseñas -->
-              <div class="py-8 text-center text-gray-400">
-                <v-icon name="bi-chat-square-text" class="mx-auto mb-2 text-4xl" />
-                <p>No hay reseñas todavía</p>
-              </div>
-            </div>
+          <div>
+            <p class="text-xs text-gray-500 md:text-sm">Miembro desde</p>
+            <p class="text-sm md:font-medium">{{ data.formattedDate }}</p>
           </div>
         </div>
       </div>
-      
+     
+    </div>
+
+    <!-- Columna central - Biografía y estadísticas -->
+    <div class="space-y-3 md:space-y-6 md:col-span-2">
+      <div class="p-3 bg-white rounded-xl shadow-sm md:p-6">
+        <h2 class="flex items-center mb-2 text-lg font-bold text-gray-800 md:mb-4 md:text-xl">
+          <v-icon name="bi-person-lines-fill" class="mr-2 text-indigo-600" />
+          Sobre mí
+        </h2>
+        <p class="text-sm text-gray-700 md:leading-relaxed">
+          {{ data.bio }}
+        </p>
+      </div>
+
+     
+    </div>
+  </div>
+</div>
+
 
 <!--End section about expert-->
       <section class="py-2 bg-gradient-to-b from-gray-50 to-white">
@@ -198,7 +146,7 @@
           
           <!-- Selector de horarios mejorado -->
           <section v-if="availableTimeData && availableTimeData.length > 0"
-            class="p-6 mt-8 bg-white rounded-xl ring-1 ring-gray-100 shadow-lg">
+            class="px-3 py-1 mt-3 bg-white rounded-xl ring-1 ring-gray-100 shadow-lg">
             <h3 class="flex gap-2 items-center mb-6 text-xl font-semibold text-gray-900">
               <v-icon name="bi-clock-history" class="text-gray-600" />
               Seleccione su horario preferido
@@ -209,7 +157,7 @@
     v-for="(weekDay, index) in weekDays" 
     :key="index" 
     class="animate-fade-up"
-    :style="{ animationDelay: `${index * 100}ms` }"
+    :style="{ animationDelay: `${index * 400}ms` }"
   >
   <DateSquare 
   v-if="availableTimeData[0]?.days"
@@ -223,6 +171,7 @@
   :available-for-appointment="availableTimeData[0]?.days.find(d => d.day === weekDay.day)?.availableDay || false" 
   :selected-day="userDateSelection"
   :selected-hour="userHourSelection" 
+  :index="index"
 />
   </div>
 </div>
@@ -255,6 +204,42 @@
           </article>
         </div>
       </section>
+
+      <div class="p-3 m-2 bg-white rounded-xl shadow-sm md:p-6">
+        <h2 class="flex items-center mb-2 text-lg font-bold text-gray-800 md:mb-4 md:text-xl">
+          <v-icon name="bi-graph-up" class="mr-2 text-indigo-600" />
+          Estadísticas
+        </h2>
+        <div class="grid grid-cols-2 gap-2 md:gap-4 md:grid-cols-3">
+          <div class="p-2 text-center bg-blue-50 rounded-lg md:p-4">
+            <p class="text-lg font-bold text-indigo-700 md:text-2xl">{{ data.experienceYears }}+</p>
+            <p class="text-xs text-gray-600 md:text-sm">Años de experiencia</p>
+          </div>
+          <div class="p-2 text-center bg-blue-50 rounded-lg md:p-4">
+            <p class="text-lg font-bold text-indigo-700 md:text-2xl">{{ data.completedSessions }}</p>
+            <p class="text-xs text-gray-600 md:text-sm">Sesiones completadas</p>
+          </div>
+          <div class="p-2 text-center bg-blue-50 rounded-lg md:p-4">
+            <p class="text-lg font-bold text-indigo-700 md:text-2xl">
+              {{ data.rating }}
+              <v-icon name="io-star" class="inline-block ml-1 text-indigo-600" />
+            </p>
+            <p class="text-xs text-gray-600 md:text-sm">({{ data.totalRatings }} reseñas)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reseñas (oculto por ahora) -->
+      <div class="hidden p-3 bg-white rounded-xl shadow-sm md:p-6">
+        <h2 class="flex items-center mb-2 text-lg font-bold text-gray-800 md:mb-4 md:text-xl">
+          <v-icon name="bi-chat-square-text" class="mr-2 text-indigo-600" />
+          Reseñas recientes
+        </h2>
+        <div class="py-6 text-center text-gray-400">
+          <v-icon name="bi-chat-square-text" class="mx-auto mb-2 text-3xl md:text-4xl" />
+          <p class="text-sm">No hay reseñas todavía</p>
+        </div>
+      </div>
 
       <!-- Sección de formulario mejorada -->
       <section class="py-3 bg-gray-50">
@@ -359,7 +344,6 @@ const props = defineProps({
     type: Object,
     required: false
   },
-
 });
 
 
@@ -1013,6 +997,10 @@ onMounted(() => {
     console.log('Selected expert uid:', sysStore.getSelectedExpertUid);
     getExpertData();
   })
+//En la cita deberá haber un banner donde diga que sta prohibido compartir datos de contacto con el experto (no se permite compartir datos de contacto con el experto) (LOGO)
+// Con fines de calidad en el servicio, la  llamada será grabada y podrá ser reproducida por el experto en caso de que el cliente no cumpla con el servicio contratado.
+//Banner en el top permanente con el nombre de la empresa/app 
+ 
 
 
 </script>
