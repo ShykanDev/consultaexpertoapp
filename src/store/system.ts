@@ -27,6 +27,7 @@ const systemStore = defineStore('system', {
     getShowModalResetPassword: (state) => state.showModalResetPassword,
     getSelectedExpertUid: (state) => state.selectedExpertUid,
   },
+  persist:true
 })
 
 export default systemStore

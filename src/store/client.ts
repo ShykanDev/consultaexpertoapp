@@ -17,6 +17,7 @@ const clientStore = defineStore('client', {
     getClientName: (state) => state.clientName,
     getClientUid: (state) => state.clientUid,
   },
+  persist:true
 })
 
 export default clientStore

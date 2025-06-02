@@ -11,6 +11,7 @@ export const userStore = defineStore("user", {
     },
     getters: {
         getUserExpertPick : (state) => state.userExpertPick
-    }
+    },
+    persist:true
 })
     

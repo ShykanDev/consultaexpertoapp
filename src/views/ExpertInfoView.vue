@@ -1,6 +1,9 @@
 <template>
  <ion-page>
   <ion-content>
+    <ion-refresher slot="fixed" @ionRefresh="handleRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
     <ion-header>
       <ion-toolbar>
         <ion-title class="text-2xl font-bold text-center text-sky-600">Agendar Cita</ion-title>
@@ -323,7 +326,7 @@ const notyf = new Notyf({
 });
 
 import { onMounted, } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent,  } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, IonRefresherContent } from '@ionic/vue';
 
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -656,6 +659,23 @@ const addAppointmentToClient = async() => {
 const scheduleAppointment = async () => {
   const appointmentStore = useAppointmentStore();
   
+  if (userAppointmentsFb.value.some(appointment => appointment.userId === client.getClientUid)) {
+        console.log('User has scheduled an appointment, userUid: ', client.getClientUid);
+        userHasScheduled.value = true;
+        notyf.error('Ya tiene una cita programada con este experto, no puede programar otra');
+        return
+      } 
+
+  //Validate if user is logged in
+  if (!authStore().getUserUid || !client.getClientUid) {
+    notyf.error('Por favor inicie sesión para programar una cita');
+    authStore().isAuth = false;
+    authStore().setUserUid('');
+    client.setClientUid('');
+    router.push('/tabs/tab1');
+    return;
+  }
+
   // Validate that a day and hour have been selected
   if (!appointmentStore.dayName || !appointmentStore.selectedHour) {
     alert('Por favor selecciona una fecha y hora');
@@ -952,6 +972,7 @@ import { reactive } from 'vue';
 
 import InfoUserLoader from '@/animations/InfoUserLoader.vue';
 import ContentLoader from '@/animations/ContentLoader.vue';
+import router from '@/router';
 const isLoadingExpertInfo = ref(true);
 const data = reactive({
     name: '',
@@ -1016,7 +1037,17 @@ onMounted(() => {
 // Con fines de calidad en el servicio, la  llamada será grabada y podrá ser reproducida por el experto en caso de que el cliente no cumpla con el servicio contratado.
 //Banner en el top permanente con el nombre de la empresa/app 
  
-
+const handleRefresh = (event: CustomEvent) => {
+        setTimeout(() => {
+          // Any calls to load data go here
+          availableTimeData.value = [];
+          if(event.target){
+            event.target.complete();
+          }
+          getDates();
+          
+        }, 200);
+      }
 
 </script>
 
