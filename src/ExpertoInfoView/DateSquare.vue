@@ -13,7 +13,7 @@
         :key="slot.hour"
         @click="selectHour(slot.hour)"
         :class="[
-          'w-full py-2 px-4 rounded-xl text-sm font-medium transition-all duration-200',
+          'w-full py-2 px-4 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[.8] ',
           isHourSelected(slot.hour)
             ? 'bg-blue-600 text-white shadow-md'
             : isSlotAvailable(slot)

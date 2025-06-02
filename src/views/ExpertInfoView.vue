@@ -1051,10 +1051,22 @@ const handleRefresh = (event: CustomEvent) => {
         setTimeout(() => {
           // Any calls to load data go here
           availableTimeData.value = [];
+          data.formattedDate = '';
+          data.experienceYears = 0;
+          data.completedSessions = 0;
+          data.profesionalId = '';
+          data.email = '';
+          data.isBanned = false;
+          data.isSuspended = false;
+          data.suspensionReason = '';
+          data.imgUrl = '';
+          isLoadingExpertInfo.value = true;
+          
           if(event.target){
             event.target.complete();
           }
           getDates();
+          getExpertData();
           
         }, 200);
       }
