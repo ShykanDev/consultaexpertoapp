@@ -655,6 +655,7 @@ const addAppointmentToClient = async() => {
 const scheduleAppointment = async () => {
   const appointmentStore = useAppointmentStore();
   
+  // Validate that a day and hour have been selected
   if (!appointmentStore.dayName || !appointmentStore.selectedHour) {
     alert('Por favor selecciona una fecha y hora');
     return;
@@ -662,68 +663,77 @@ const scheduleAppointment = async () => {
 
   try {
     isLoading.value = true;
+
+    // Log to console the appointment being scheduled
     console.log('Programando cita para:', {
       day: appointmentStore.dayName,
       hour: appointmentStore.selectedHour,
       formattedDate: appointmentStore.formattedDate
     });
 
-    // 1. Obtener la referencia al documento del experto
+    // 1. Get the reference to the selected expert's document
     const expertRef = doc(db, 'MockExperts', sysStore.getSelectedExpertUid);
+    
+    // 2. Get the expert's 'Schedule' collection
     const scheduleRef = collection(expertRef, 'Schedule');
     
-    // 2. Obtener el documento de horario
+    // 3. Query the documents in the collection, ignoring the one with the same UID as the expert
     const q = query(scheduleRef, where('userUid', '!=', sysStore.getSelectedExpertUid));
     const querySnapshot = await getDocs(q);
     
+    // Check if no documents were found
     if (querySnapshot.empty) {
       console.error('No se encontró el horario del experto');
       return;
     }
 
-    // 3. Obtener el documento y sus datos actuales
+    // 4. Get the reference and data of the first found document
     const docRef = querySnapshot.docs[0].ref;
     const docData = querySnapshot.docs[0].data();
     
-    // 4. Crear una copia del array days
+    // 5. Create a copy of the days array to manipulate it without affecting the original directly
     const updatedDays = [...docData.days];
     
-    // 5. Encontrar y actualizar el día específico
+    // 6. Find the index of the selected day within the array
     const dayIndex = updatedDays.findIndex(day => 
       day.day.toLowerCase() === appointmentStore.dayName.toLowerCase()
     );
     
+    // 7. If the day was found
     if (dayIndex !== -1) {
-      // 6. Crear un nuevo array de slots con la hora actualizada
+      // 8. Update the slots of the found day by marking the selected hour as taken
       updatedDays[dayIndex] = {
         ...updatedDays[dayIndex],
         slots: updatedDays[dayIndex].slots.map(slot => 
           slot.hour === appointmentStore.selectedHour
-            ? { ...slot, takenBy: 'ID_DEL_USUARIO' }
+            ? { ...slot, takenBy: 'ID_DEL_USUARIO' } // Mark the slot as taken
             : slot
         )
       };
       
-      // 7. Actualizar el documento en Firebase
+      // 9. Save the changes in Firestore
       await updateDoc(docRef, { days: updatedDays });
       console.log('Horario actualizado exitosamente');
       
-      // 8. Opcional: Actualizar el estado local
-      //reset to default values
-      addAppointmentToClient();
-      appointmentStore.setAppointment('', '', '')
+      // 10. Optional: Reset values and refresh data
+      addAppointmentToClient(); // Add the appointment to the client
+      appointmentStore.setAppointment('', '', ''); // Clear the current selection
 
-      getDates(); // Si tienes una función para refrescar los datos
+      getDates(); // Refresh the available dates (if applicable)
 
     } else {
+      // If the day was not found in the document
       console.error('Día no encontrado en el horario');
     }
   } catch (error) {
+    // Error handling for updating the document
     console.error('Error al actualizar el horario en Firebase:', error);
   } finally {
+    // End the loading state
     isLoading.value = false;
   }
 };
+
 
 interface ITimestamp {
   seconds: number;
