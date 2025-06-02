@@ -74,5 +74,7 @@ Implementar la sincronización en tiempo real de los cambios de estado
 6. En caso de que no haya citas agendadas, el usuario puede agendar una cita, la cita llevara el estado "Por Confirmar" y el experto podrá confirmarla o rechazarla, una solucion es que el usuario tenga una subcollection de citas donde se tenrán los datos, se creará una nueva subcollection por caada cita agendada, dentro llevará el (isDateConfirmed) donde el cliente solo tendra derechos de read y el experto tendra derechos de read y write;
 
 
-
-
+//TODO:
+1. Add a function  to verify if client has an appointment scheduled with the expert selected, if the client has an appointment scheduled with the expert selected, the app should show a message to the user that he can't schedule another appointment with the same expert, if the client doesn't have an appointment scheduled with the expert selected, the app should allow the user to schedule an appointment with the expert selected.
+2. If some slot includes the key takenBy with the client UID, the square will display 'Su cita'
+3. Add UI notification to notify the user when the expert confirms the appointment or an error occurs

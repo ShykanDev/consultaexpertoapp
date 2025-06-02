@@ -308,6 +308,20 @@
 
 
 <script setup lang="ts">
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css'; // for React, Vue and Svelte
+
+// Create an instance of Notyf
+const notyf = new Notyf({
+  duration: 3000,
+  dismissible:true,
+  ripple:true,
+  position:{
+    x:'center',
+    y:'top'
+  }
+});
+
 import { onMounted, } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent,  } from '@ionic/vue';
 
@@ -553,21 +567,7 @@ const resetUserSelection = () => {
 
 //Validate user has selected a valid date that is not taken (to see if the hour is available and not as been already taken in the availableHours array)
 
-const validateUserSelection = (data) => {
-  if (!userDateSelection.value || !userHourSelection.value) {
-    alert('Por favor, selecciona una fecha y hora válida');
-    return false;
-  }
-  if (data.hoursTaken.includes(userHourSelection.value)) {
-    alert('Por favor, selecciona una hora disponible');
-    return false;
-  }
-  alert('Fecha y hora válida');
-  return true;
-}
-const availableHours = ref([]);
 
-const arrayToUpdate = ref();
 
 const client = clientStore();
 
@@ -590,11 +590,8 @@ const getClientAppointments = async () => {
         userAppointmentsFb.value.push({ id: doc.id, ...doc.data() });
         console.log(doc.data());
       });
-      if (userAppointmentsFb.value.length > 0) {
-        if (userAppointmentsFb.value.some(e => e.profession === props.profession)) {
-          console.log('User has scheduled an appointment with this expert');
-          userHasScheduled.value = true;
-        }
+      if (userAppointmentsFb.value.length > 0 && userAppointmentsFb.value.some(appointment => appointment.userUid === client.getClientUid)) {
+        userHasScheduled.value = true;
       }
     }
   } catch (error) {
@@ -661,6 +658,10 @@ const scheduleAppointment = async () => {
     return;
   }
 
+  if(userHasScheduled.value){
+    notyf.error('Ya tiene una cita programada con este experto, no puede programar otra');
+    return;
+  }
   try {
     isLoading.value = true;
 
@@ -678,7 +679,7 @@ const scheduleAppointment = async () => {
     const scheduleRef = collection(expertRef, 'Schedule');
     
     // 3. Query the documents in the collection, ignoring the one with the same UID as the expert
-    const q = query(scheduleRef, where('userUid', '!=', sysStore.getSelectedExpertUid));
+    const q = query(scheduleRef, where('userUid', '!=', 'testing'));
     const querySnapshot = await getDocs(q);
     
     // Check if no documents were found
@@ -706,7 +707,7 @@ const scheduleAppointment = async () => {
         ...updatedDays[dayIndex],
         slots: updatedDays[dayIndex].slots.map(slot => 
           slot.hour === appointmentStore.selectedHour
-            ? { ...slot, takenBy: 'ID_DEL_USUARIO' } // Mark the slot as taken
+            ? { ...slot, takenBy: client.getClientUid, isConfirmed:false } // Mark the slot as taken
             : slot
         )
       };
