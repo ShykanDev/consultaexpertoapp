@@ -337,7 +337,7 @@ const route = useRoute();
 const expertsStore = experts();
 
 
-console.log(route.params.name);
+//(route.params.name);
 const props = defineProps({
   title: {
     type: String,
@@ -444,7 +444,7 @@ const getDates = async () => {
       weeklySchedule: currentWeekSchedule
     }];
     getClientAppointments()
-    console.log(availableTimeData.value);
+    //(availableTimeData.value);
   } catch (error) {
     console.error('Error al obtener fechas:', error);
   } finally {
@@ -452,6 +452,7 @@ const getDates = async () => {
   }
 };
 onMounted(() => {
+  userHasScheduled.value = false;
   getDates();
 })
 
@@ -536,10 +537,10 @@ const addNewDate = async () => {
     //Set the document id the same as the userId
     const docRef = doc(collectionMockExperts);
     updateDoc(docRef, { id: '123abc' });
-    console.log('Usuario agregado correctamente');
+    //('Usuario agregado correctamente');
 
   } catch (error) {
-    console.log('Error al agregar el usuario ', error);
+    //('Error al agregar el usuario ', error);
 
   }
 }
@@ -554,7 +555,7 @@ const userMonth = ref();
 const newDate = new Date().toLocaleString('es-ES', { month: 'long' });
 //Function to set the user selection (hour, date)
 const getUserSelection = (day: string, hour: string, index: number) => {
-  console.log('Selección:', { day, hour, index });
+  //('Selección:', { day, hour, index });
   userDateSelection.value = day;
   userHourSelection.value = hour;
   // Aquí puedes agregar cualquier lógica adicional
@@ -587,24 +588,23 @@ const getClientAppointments = async () => {
     if (client.getClientUid) { //If client is logged in then the expert data could be edited (add date)
       const clientCollectionFutureAppointments = collection(db, `users/${client.getClientUid}/FutureAppointments`);
       const querySnapshot = await getDocs(clientCollectionFutureAppointments);
-      console.log('GETTING CLIENT APPOINTMENTS');
+      //('GETTING CLIENT APPOINTMENTS');
       userAppointmentsFb.value = [];
       querySnapshot.forEach((doc) => {
         userAppointmentsFb.value.push({ id: doc.id, ...doc.data() });
-        console.log(doc.data());
+        //(doc.data());
       });
-      console.log(userAppointmentsFb.value);
+      //(userAppointmentsFb.value);
       
-      if (userAppointmentsFb.value.some(appointment => appointment.userId === client.getClientUid)) {
-        console.log('User has scheduled an appointment, userUid: ', client.getClientUid);
-        userHasScheduled.value = true;
+      if (userAppointmentsFb.value.some((appointment: IFutureAppointment) => appointment.userId === authStore().getUserUid)) {
+        //('User has scheduled an appointment, userUid: ', authStore().getUserUid);
+     
       } else {
-        console.log('User has not scheduled an appointment, userUid: ', client.getClientUid);
-        userHasScheduled.value = false;
+        //('User has not scheduled an appointment, userUid: ', authStore().getUserUid);
       }
     }
   } catch (error) {
-    console.log(`Error getting client appointments: ${error}`);
+    //(`Error getting client appointments: ${error}`);
   }
 }
 
@@ -629,10 +629,10 @@ const addFutureAppointment = async () => {
       }
       await addDoc(clientCollectionFutureAppointments, FutureAppointment);
     }
-    console.log('Future appointment added successfully');
+    //('Future appointment added successfully');
     
   } catch (error) {
-    console.log(error);
+    //(error);
   }
 }
 
@@ -650,21 +650,31 @@ const addAppointmentToClient = async() => {
    userId: authStore().getUserUid,
    createdAt: Timestamp.now(),
  })
- console.log('Cita agregada exitosamente');
+ //('Cita agregada exitosamente');
   } catch (error) {
-    console.log(error);
+    //(error);
   }
+}
+
+
+//Getting the dates and returning the hours taken that matches with the user uid
+const getIsUserScheduled =  () => {
+  //(availableTimeData.value);
+  
+  availableTimeData.value.forEach((day: any) => {
+    console.log('day', day);
+      
+  })
+  if (availableTimeData.value[0].days[0].slots.some( (slot: any) => slot.takenBy === authStore().getUserUid)) {
+    userHasScheduled.value = true;
+    notyf.error('Ya tienes una cita programada con este experto');
+    return false;
+  }
+  return true;
 }
 
 const scheduleAppointment = async () => {
   const appointmentStore = useAppointmentStore();
-  
-  if (userAppointmentsFb.value.some(appointment => appointment.userId === client.getClientUid)) {
-        console.log('User has scheduled an appointment, userUid: ', client.getClientUid);
-        userHasScheduled.value = true;
-        notyf.error('Ya tiene una cita programada con este experto, no puede programar otra');
-        return
-      } 
 
   //Validate if user is logged in
   if (!authStore().getUserUid || !client.getClientUid) {
@@ -682,10 +692,9 @@ const scheduleAppointment = async () => {
     return;
   }
 
-  if(userHasScheduled.value){
-    notyf.error('Ya tiene una cita programada con este experto, no puede programar otra');
+ if (!getIsUserScheduled()) {
     return;
-  }
+ }
   try {
     isLoading.value = true;
 
@@ -743,7 +752,8 @@ const scheduleAppointment = async () => {
       // 10. Optional: Reset values and refresh data
       addAppointmentToClient(); // Add the appointment to the client
       appointmentStore.setAppointment('', '', ''); // Clear the current selection
-
+      availableTimeData.value = [];
+      userHasScheduled.value = true;
       getDates(); // Refresh the available dates (if applicable)
 
     } else {
@@ -846,16 +856,16 @@ const transformAndUpdateSchedules = async () => {
     // 2. Para cada experto, actualizar su Schedule
     for (const expertDoc of expertsSnapshot.docs) {
       const expertId = expertDoc.id;
-      console.log(`Procesando experto: ${expertId}`);
+      //(`Procesando experto: ${expertId}`);
       
       const scheduleRef = collection(db, `MockExperts/${expertId}/Schedule`);
       const scheduleSnapshot = await getDocs(scheduleRef);
-      console.log(`Encontrados ${scheduleSnapshot.size} documentos de horario`);
+      //(`Encontrados ${scheduleSnapshot.size} documentos de horario`);
 
       for (const doc of scheduleSnapshot.docs) {
         try {
           const oldData = doc.data();
-          console.log('Datos antiguos:', JSON.stringify(oldData, null, 2));
+          //('Datos antiguos:', JSON.stringify(oldData, null, 2));
           
           // Verificar si weeklySchedule existe
           if (!oldData.weeklySchedule || !Array.isArray(oldData.weeklySchedule)) {
@@ -905,12 +915,12 @@ const transformAndUpdateSchedules = async () => {
           });
           
           // Actualizar el documento
-          console.log('Nuevo formato:', JSON.stringify(newSchedule, null, 2));
+          //('Nuevo formato:', JSON.stringify(newSchedule, null, 2));
           await updateDoc(doc.ref, { 
             ...oldData, // Mantener los datos existentes
             days: newSchedule
           });
-          console.log('Documento actualizado exitosamente');
+          //('Documento actualizado exitosamente');
           
         } catch (docError) {
           console.error(`Error procesando documento ${doc.id}:`, docError);
@@ -918,7 +928,7 @@ const transformAndUpdateSchedules = async () => {
       }
     }
     
-    console.log('Proceso completado');
+    //('Proceso completado');
     return true;
   } catch (error) {
     console.error('Error general:', error);
@@ -959,7 +969,7 @@ const weekDays = ref(getWeekDays());
 
 
 const handleHourSelected = (hour: string, day: string) => {
-  console.log('Hora seleccionada en el padre:', { hour, day });
+  //('Hora seleccionada en el padre:', { hour, day });
   userDateSelection.value = day;
   userHourSelection.value = hour;
   
@@ -1000,11 +1010,11 @@ const getExpertData = async () => {
 
         const expertMockSnapshot = await getDocs(qGetExpertMatch);
         if(expertMockSnapshot.empty){
-            console.log('No se encontró experto en la vista ExpertInfoView');
+            //('No se encontró experto en la vista ExpertInfoView');
             return;
         }
-        console.log('Se encontro experto en la vista ExpertInfoView');
-        console.log(expertMockSnapshot.docs[0].data());
+        //('Se encontro experto en la vista ExpertInfoView');
+        //(expertMockSnapshot.docs[0].data());
         
         expertData.value = expertMockSnapshot.docs[0].data();
         data.name = expertData.value.name;
@@ -1023,14 +1033,14 @@ const getExpertData = async () => {
         data.imgUrl = expertData.value.imgUrl;
         isLoadingExpertInfo.value = false;
         } catch (error) {
-        console.log(error);
+        //(error);
     } finally {
         isLoadingExpertInfo.value = false;
     }
 }
 
 onMounted(() => {
-    console.log('Selected expert uid:', sysStore.getSelectedExpertUid);
+    //('Selected expert uid:', sysStore.getSelectedExpertUid);
     getExpertData();
   })
 //En la cita deberá haber un banner donde diga que sta prohibido compartir datos de contacto con el experto (no se permite compartir datos de contacto con el experto) (LOGO)
