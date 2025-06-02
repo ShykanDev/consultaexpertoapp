@@ -13,27 +13,23 @@
     <div class="container px-6 mx-auto text-center">
       <h1 class="mb-4 text-4xl font-bold md:text-5xl font-inter">Descubra a Nuestros Expertos</h1>
       <p class="mb-8 text-lg md:text-xl font-inter">Soluciones personalizadas y asesoramiento profesional en diversas áreas</p>
-      <ion-button href="/tabs/experts-list#expertos" class="px-8 py-3 text-white rounded-full transition duration-300 hover:bg-gray-100 font-inter">
-        Ver Categorías
-      </ion-button>
+      
     </div>
     <div class="flex justify-center rounded-xl bg-sky-700/25 w-dvw">
           <ion-accordion-group class="w-full" expand="inset">
     <ion-accordion value="first" class="w-full" >
       <ion-item slot="header" class="rounded">
-        <ion-label>Ver todos los expertos</ion-label>
+        <ion-label class="font-bold text-center text-blue-700 font-quicksand" color="primary">Ver Categorías</ion-label>
       </ion-item>
       <div class="rounded-2xl ion-padding" slot="content">
         <ul class="rounded-2xl">
           <li 
             v-for="(expert, index) in experts" 
             :key="index"  
-            class="p-3 mb-2 text-center bg-emerald-600 rounded-md transition-colors animate-fade hover:bg-emerald-700 hover:cursor-pointer"
+            class="p-3 mb-2 text-center rounded-md transition-colors bg-sky-500/25 animate-fade hover:bg-sky-400 hover:cursor-pointer"
            @click="getExpertSelection(expert.name)"
           >
-            <div class="text-lg font-medium">{{ expert.name }}</div>
-            <div class="italic">{{ expert.summary }}</div>
-            <div class="p-1 my-1 text-sm font-semibold text-emerald-600 bg-white rounded-lg opacity-90 font-inter">{{ expert.specialty }}</div>
+            <div class="p-1 my-1 text-base font-semibold text-sky-600 bg-white rounded-lg opacity-90">{{ expert.specialty }}</div>
           </li>
         </ul>
       </div>

@@ -6,7 +6,15 @@
     </ion-refresher>
     <ion-header>
       <ion-toolbar>
-        <ion-title class="text-2xl font-bold text-center text-sky-600">Agendar Cita</ion-title>
+        <div class="flex items-center px-2">
+          <article @click="router.back()"  class="flex items-center cursor-pointer">
+            <span class="py-1 font-semibold text-sky-600 font-quicksand">
+              <v-icon name="md-arrowbackiosnew-round" class="animate-fade-left" /> 
+              <span class="text-base animate-fade-left animate-delay-100">atras</span>
+            </span>
+          </article>
+          <ion-title class="text-2xl font-bold text-center text-sky-600">Agendar Cita</ion-title>
+        </div>
       </ion-toolbar>
     </ion-header>
     <section v-if="isLoading" class="flex fixed top-0 right-0 bottom-0 left-0 z-50 justify-center items-center bg-black/45"> <!-- Loader -->
@@ -326,7 +334,7 @@ const notyf = new Notyf({
 });
 
 import { onMounted, } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, IonRefresherContent } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, IonRefresherContent, onIonViewDidEnter } from '@ionic/vue';
 
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -451,10 +459,7 @@ const getDates = async () => {
     isLoading.value = false;
   }
 };
-onMounted(() => {
-  userHasScheduled.value = false;
-  getDates();
-})
+
 
 /*
 addDoc(collectionMockExperts, {
@@ -813,9 +818,7 @@ const getExpertInfo = async () => {
 };
 
 
-onMounted(() => {
-  getExpertInfo();
-})
+
 
 const getSchedulesFromAllExperts = async () => {
   try {
@@ -841,9 +844,7 @@ const getSchedulesFromAllExperts = async () => {
 };
 
 // Uso
-onMounted(() => {
-  getSchedulesFromAllExperts();
-})
+
 
 const transformAndUpdateSchedules = async () => {
   try {
@@ -1041,7 +1042,7 @@ const getExpertData = async () => {
 
 onMounted(() => {
     //('Selected expert uid:', sysStore.getSelectedExpertUid);
-    getExpertData();
+    
   })
 //En la cita deberá haber un banner donde diga que sta prohibido compartir datos de contacto con el experto (no se permite compartir datos de contacto con el experto) (LOGO)
 // Con fines de calidad en el servicio, la  llamada será grabada y podrá ser reproducida por el experto en caso de que el cliente no cumpla con el servicio contratado.
@@ -1070,7 +1071,29 @@ const handleRefresh = (event: CustomEvent) => {
           
         }, 200);
       }
+//All the unmounted values
+/**
+ * onMounted(() => {
+  userHasScheduled.value = false;
+  getDates();
+})
+  onMounted(() => {
+  getExpertInfo();
+})
+  onMounted(() => {
+  getSchedulesFromAllExperts();
+  getExpertData();
+})
+ */
 
+onIonViewDidEnter(() => {
+  console.log('Component ViewDidEnter (similar to mounted)');
+  userHasScheduled.value = false;
+  getDates();
+  getExpertInfo();
+  getSchedulesFromAllExperts();
+  getExpertData();
+})
 </script>
 
 <style scoped></style>

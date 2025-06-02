@@ -127,7 +127,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   IonItem,
@@ -137,6 +137,7 @@ import {
   IonIcon,
   IonAccordion, IonAccordionGroup, IonLabel,
   IonAlert
+  
 } from '@ionic/vue';
 import {
   mail,
@@ -149,7 +150,10 @@ import { authStore } from '@/store/auth';
 import { collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
 import LoaderMultipleDots from '@/animations/LoaderMultipleDots.vue';
 import clientStore from '@/store/client';
-
+import { onIonViewWillEnter,
+  onIonViewDidEnter,
+  onIonViewWillLeave,
+  onIonViewDidLeave } from '@ionic/vue';
 const email = ref('');
 const password = ref('');
 const showPassword = ref(false);
@@ -305,6 +309,23 @@ const alertInputs = [
 
 const loading = ref(false);
 const setLoading = (value: boolean) =>  loading.value = value;
+
+
+onIonViewDidEnter(() => {
+  console.log('Component ViewDidEnter');
+})
+
+onIonViewWillEnter(() => {
+  console.log('Component ViewWillEnter');
+})
+
+onIonViewWillLeave(() => {
+  console.log('Component ViewWillLeave');
+})
+
+onIonViewDidLeave(() => {
+  console.log('Component ViewDidLeave');
+})
 
 </script>
 
