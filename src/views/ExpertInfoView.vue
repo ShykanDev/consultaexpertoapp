@@ -440,7 +440,7 @@ const getDates = async () => {
       ...docData,
       weeklySchedule: currentWeekSchedule
     }];
-
+    getClientAppointments()
     console.log(availableTimeData.value);
   } catch (error) {
     console.error('Error al obtener fechas:', error);
@@ -590,8 +590,14 @@ const getClientAppointments = async () => {
         userAppointmentsFb.value.push({ id: doc.id, ...doc.data() });
         console.log(doc.data());
       });
-      if (userAppointmentsFb.value.length > 0 && userAppointmentsFb.value.some(appointment => appointment.userUid === client.getClientUid)) {
+      console.log(userAppointmentsFb.value);
+      
+      if (userAppointmentsFb.value.some(appointment => appointment.userId === client.getClientUid)) {
+        console.log('User has scheduled an appointment, userUid: ', client.getClientUid);
         userHasScheduled.value = true;
+      } else {
+        console.log('User has not scheduled an appointment, userUid: ', client.getClientUid);
+        userHasScheduled.value = false;
       }
     }
   } catch (error) {
@@ -600,9 +606,7 @@ const getClientAppointments = async () => {
 }
 
 //Getting the client appointments onMounted
-onMounted(() => {
-  getClientAppointments();
-})
+
 
 
 //Add future appointment to the client collection
