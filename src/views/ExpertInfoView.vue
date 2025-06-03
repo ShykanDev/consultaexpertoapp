@@ -16,7 +16,7 @@
           
           <div class="flex justify-between items-center pr-3 w-full">
           <ion-title class="text-base font-bold text-blue-500 sm:text-xl font-quicksand">Agendar Cita</ion-title>
-          <div class="flex">
+          <div class="flex animate animate-fade animate-delay-[3000ms]">
             <span v-html="currentName" :key="currentName"></span>
           </div>
         </div>

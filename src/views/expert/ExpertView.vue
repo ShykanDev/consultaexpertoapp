@@ -6,6 +6,9 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="bg-gray-50">
+      <ion-refresher slot="fixed" @ionRefresh="handleRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
       <InfoUserLoader v-if="isLoading" />
 
 <!-- Sección superior con foto y datos principales -->
@@ -47,7 +50,7 @@
 </section>
 
 <!-- Contenido principal -->
-<div class="container px-4 py-12 mx-auto">
+<div class="w-full">
   <div class="hidden flex-col -mx-4 lg:flex-row">
     <!-- Columna izquierda -->
 
@@ -115,7 +118,7 @@
       </div>
     </div>
   </div>
-  <div class="p-4 min-h-screen bg-blue-50">
+  <div class="p-4 w-full min-h-screen bg-blue-50">
     <!-- Estado general -->
     <div class="p-4 mx-auto mb-6 max-w-md bg-white rounded-lg border border-blue-100 shadow-sm">
       <div class="flex justify-between items-center">
@@ -130,7 +133,7 @@
     </div>
 
     <!-- Horarios por día -->
-    <div class="mx-auto space-y-4 max-w-md">
+    <div class="mx-auto space-y-4 max-w-full">
       <div v-for="day in expertSchedule?.days" :key="day.day" 
            class="overflow-hidden bg-white rounded-lg border border-blue-100 shadow-sm">
         
@@ -158,12 +161,14 @@
                     'bg-blue-100 text-blue-800': slot.takenBy === 'ID_DEL_USUARIO',
                     'bg-gray-100 text-gray-800': slot.takenBy && slot.takenBy !== 'ID_DEL_USUARIO'
                   }">
-              {{ 
-                slot.takenBy === null ? 'Disponible' :
-                slot.takenBy === 'ID_DEL_USUARIO' ? 'Ocupado' : 'Ocupado'
-              }}
+            {{ 
+  (slot.takenBy === null ? 'Disponible' :
+   slot.takenBy === 'ID_DEL_USUARIO' ? 'Ocupado' : '') 
+}}
             </span>
-            <button v-if="slot.takenBy !== null" class="px-4 py-2 text-white bg-blue-600 rounded-full">Confirmar</button>
+            <ion-button  v-if="slot.takenBy !== null" @click="getAppointmentData(slot.takenBy)" class="text-blue-600 rounded-full" fill="outline" mode="md">Ver info</ion-button>
+            <ion-button v-if="slot.isConfirmed == false" @click="confirmarCita(day.day, slot.hour)" class="text-white rounded-full" fill="solid" color="primary" mode="ios">Confirmar Cita</ion-button>
+           
           </div>
         </div>
 
@@ -181,9 +186,9 @@
 </template>
 
 <script lang="ts" setup>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, onIonViewDidEnter, IonButton } from '@ionic/vue';
 import { reactive, ref } from 'vue';
-import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, query, where, doc, setDoc } from 'firebase/firestore';
 import { onMounted } from 'vue';
 import { authStore } from '@/store/auth';
 import InfoUserLoader from '@/animations/InfoUserLoader.vue';
@@ -210,6 +215,7 @@ const db = getFirestore();
 const expertMockCollection = collection(db, 'MockExperts');
 const expertData = ref();
 const getExpertData = async () => {
+    isLoading.value = true;
     try {
         const qGetExpertMatch = query(expertMockCollection, where('email', '==', authStore().getUserEmail));
         const expertMockSnapshot = await getDocs(qGetExpertMatch);
@@ -240,6 +246,7 @@ const getExpertData = async () => {
   interface ScheduleSlot {
   hour: string;
   takenBy: string | null;
+  isConfirmed: boolean;
 }
 
 interface DaySchedule {
@@ -256,6 +263,7 @@ interface DayInfo {
   isDayAvailable: boolean;
   availableHours: string[];
   hoursTaken: string[];
+  isConfirmed: boolean;
 }
 
 interface WeeklyScheduleItem {
@@ -274,30 +282,82 @@ const expertSchedule = ref<ExpertSchedule | null>(null);
 const expertScheduleCollection = collection(db, `MockExperts/7A5Q6oAtYu1yD22VRtbL/Schedule`); //This on production should get the user UID in this case for testing it's set to based on the query to get the user id (manually set before, so thats we can not use )
 
 const getExpertSchedule = async () => {
-    try {
-        const qGetExpertSchedule = query(expertScheduleCollection, where('userUid', '!=', '7A5Q6oAtYu1yD22L'));
-        const expertMockSnapshot = await getDocs(qGetExpertSchedule);
-        if (expertMockSnapshot.empty) {
-            console.log('No se encontró el horario del experto');
-            return;
-        }
-        expertSchedule.value = expertMockSnapshot.docs[0].data() as ExpertSchedule;
-        console.log(expertMockSnapshot.docs[0].data());
-        
-    } catch (error) {
-        console.log(error);
-    } finally {
-        isLoading.value = false;
+  try {
+    const qGetExpertSchedule = query(expertScheduleCollection, where('userUid', '!=', '7A5Q6oAtYu1yD22L'));
+    const expertMockSnapshot = await getDocs(qGetExpertSchedule);
+    if (expertMockSnapshot.empty) {
+      console.log('No se encontró el horario del experto');
+      return;
     }
-}
+    // Guarda también el id real del documento
+    expertSchedule.value = {
+      ...expertMockSnapshot.docs[0].data(),
+      _docId: expertMockSnapshot.docs[0].id
+    };
+    console.log(expertMockSnapshot.docs[0].data());
+  } catch (error) {
+    console.log(error);
+  } finally {
+    isLoading.value = false;
+  }
+};
 
-onMounted(() => {
+onIonViewDidEnter(() => {
     getExpertData();
     getExpertSchedule();
     console.log(authStore().getUserUid);
-    
 })
 
+const handleRefresh = (event: CustomEvent) => {
+        setTimeout(() => {
+          // Any calls to load data go he
+     
+          getExpertData();
+          getExpertSchedule();
+          event.target.complete();
+          
+        }, 2000); 
+
+    }
+    const confirmarCita = async (dia, hora) => {
+  if (!expertSchedule.value) return;
+
+  const newSchedule = JSON.parse(JSON.stringify(expertSchedule.value));
+  const dayObj = newSchedule.days.find(d => d.day === dia);
+  if (!dayObj) return;
+  const slotObj = dayObj.slots.find(s => s.hour === hora);
+  if (!slotObj) return;
+  slotObj.isConfirmed = true;
+
+  try {
+    // Usa el id real del documento (_docId)
+    const scheduleDocRef = doc(db, `MockExperts/7A5Q6oAtYu1yD22VRtbL/Schedule`, expertSchedule.value._docId);
+    await setDoc(scheduleDocRef, newSchedule, { merge: true });
+    alert('Cita confirmada correctamente');
+    getExpertSchedule();
+  } catch (error) {
+    console.error('Error al confirmar cita:', error);
+    alert('Hubo un error al confirmar la cita');
+  }
+};
+   
+
+const usersCollection = collection(db, 'users');
+const appointmentData = ref();
+ const getAppointmentData = async (userUidParam:string) => {
+  try {
+    const qGetAppointmentData = query(usersCollection, where('userId', '==', userUidParam));
+    const appointmentSnapshot = await getDocs(qGetAppointmentData);
+    if (appointmentSnapshot.empty) {
+      console.log('No se encontró la cita');
+      return;
+    }
+    appointmentData.value = appointmentSnapshot.docs[0].data();
+    console.log(appointmentData.value);
+  } catch (error) {
+    console.log(error);
+  }
+ } 
 
 </script>
 
