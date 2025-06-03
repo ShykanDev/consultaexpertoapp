@@ -4,6 +4,9 @@
 <ion-header>
   <ion-toolbar>
     <ion-title class="text-2xl font-bold text-center text-emerald-600 font-inter">Listado de Expertos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button v-if="expertPopup" @click="toggleExpertPopup('close')" color="danger" mode="ios" class="animate-fade-left">Cerrar <v-icon name="io-close"  class="ml-2 animate-fade-left animate-delay-[55ms]" /></ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -26,7 +29,7 @@
           <li 
             v-for="(expert, index) in experts" 
             :key="index"  
-            class="p-3 mb-2 text-center rounded-md transition-colors bg-sky-500/25 animate-fade hover:bg-sky-400 hover:cursor-pointer"
+            class="p-3 mb-2 text-center rounded-md transition-colors bg-sky-500/25 animate-fade hover:bg-sky-600 hover:cursor-pointer"
            @click="getExpertSelection(expert.name)"
           >
             <div class="p-1 my-1 text-base font-semibold text-sky-600 bg-white rounded-lg opacity-90">{{ expert.specialty }}</div>
@@ -65,6 +68,7 @@
 
 <!-- popup that shows expert info (if there is more than one expert selected, it also shows a list of experts) -->
 <section v-if="expertPopup" @click.self="toggleExpertPopup('close')" class="flex overflow-auto fixed top-0 left-0 z-50 justify-center items-center px-2 w-full h-full bg-black bg-opacity-30 animate-fade animate-duration-300">
+  
   <!-- loader dots spinner -->
   <div v-if="mockExperts.length === 0" class="p-3 flex justify-center flex-col items-center bg-white rounded-3xl min-w-96 min-h-[400px]">
     <article 
@@ -76,7 +80,8 @@
   <LoaderDots />
 </article>
    </div>
-  <div v-if="mockExperts" @click.stop class="overflow-auto p-6 bg-white rounded-lg shadow-lg max-h-[80vh]">
+   
+  <div v-if="mockExperts" @click.stop class="overflow-auto p-6 w-full bg-white rounded-lg shadow-lg max-h-[80vh] ">
     <PrevInfoComponent v-for="(expert, index) in mockExperts" :key="index" :expertName="expert.name" :expertImage="expert.image" :expertSummary="expert.bio" :expertSpecialty="expert.specialty" :expertRating="expert.rating" :expert-image="expert.imgUrl" :expertUid="expert.userUid"/>
   </div>
  </section>
@@ -242,7 +247,7 @@
 import PrevInfoComponent from '@/components/Expert/PrevInfoComponent.vue';
 import SpecializationCard from '@/components/ExpertList/SpecializationCard.vue';
 import { userStore } from '@/store/user';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel, onIonViewDidLeave } from '@ionic/vue';
 import { collection, getDocs, getFirestore, updateDoc } from 'firebase/firestore';
 import { onMounted, ref } from 'vue';
 
@@ -498,7 +503,6 @@ const gettingMockExperts = async () => {
     
   }
 }
-
 
 
 </script>

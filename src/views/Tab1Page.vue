@@ -4,17 +4,15 @@
   <ion-page class="animate-fade-right">
     <!-- Header Top Left-->
     <ion-header>
-      <ion-toolbar >
+      <ion-toolbar>
         <div class="flex justify-between items-center pr-3 w-full">
-          <ion-title class="text-base font-bold text-sky-700 sm:text-xl font-quicksand">Inicio de Sesión</ion-title>
-          <span class="flex text-sm font-semibold text-sky-700 font-quicksand">
-<span>consulta</span>
-<span class="text-sky-500">gratis</span>
-<span>en</span>
-<span>linea</span>
-<span class="text-sky-500">.com</span>
-          </span>
+          <ion-title class="text-base font-bold text-sky-700 sm:text-xl font-quicksand">
+            Inicio de Sesión
+          </ion-title>
+          <div class="flex">
+            <span v-html="currentName"></span>
           </div>
+        </div>
       </ion-toolbar>
     </ion-header>
 
@@ -38,29 +36,50 @@
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
 import LoginComponent from '@/components/Login/LoginComponent.vue';
+import { ref } from 'vue';
 import { onIonViewDidEnter,
-  onIonViewWillEnter,
-  onIonViewWillLeave,
   onIonViewDidLeave } from '@ionic/vue';
 
+  const names = [
+  [
+    '<span class="animate-fade-in animate-duration-300 animate-delay-100">consulta</span>',
+    '<span class="animate-fade-in animate-duration-300 animate-delay-200">gratis</span>',
+    '<span class="animate-fade-in animate-duration-300 animate-delay-300">en</span>',
+    '<span class="animate-fade-in animate-duration-300 animate-delay-400">linea</span>',
+    '<span class="text-sky-500 animate-fade-in animate-duration-300 animate-delay-500">.com</span>'
+  ],
+  [
+    '<span class="animate-fade-in animate-duration-300 animate-delay-100">consulta</span>',
+    '<span class="animate-fade-in animate-duration-300 animate-delay-200">experto</span>',
+    '<span class="text-sky-500 animate-fade-in animate-duration-300 animate-delay-300">.com</span>'
+  ],
+  [
+    '<span class="animate-fade-in animate-delay-100">consulta</span>',
+    '<span class="animate-fade-in animate-delay-200">especializada</span>',
+    '<span class="text-sky-500 animate-fade-in animate-delay-300">.com</span>'
+  ]
+];
+let timeoutId: NodeJS.Timeout | null = null;
+const currentName = ref<string[]>(names[0]);
+ const animateNames = () => {
+  timeoutId = setInterval(() => {
+    const randomIndex = Math.floor(Math.random() * names.length);
+    currentName.value = names[randomIndex];
+  }, 2000);
+  
+ }
 
-
-onIonViewDidEnter(() => {
-  console.log('Component ViewDidEnter (similar to mounted)');
-
-})
-
-onIonViewWillEnter(() => {
-  console.log('Component ViewWillEnter (similar to beforeMount)');
-})
-
-onIonViewWillLeave(() => {
-  console.log('Component ViewWillLeave (similar to beforeUnmount)');
+ onIonViewDidEnter(() => {
+  animateNames();
 })
 
 onIonViewDidLeave(() => {
-  console.log('Component ViewDidLeave (similar to unmounted)');
+  if(timeoutId){
+    clearInterval(timeoutId);
+    timeoutId = null;
+  }
 })
+
 </script>
 
 <style scoped>

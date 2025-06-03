@@ -79,7 +79,8 @@ import { FaFlag, RiZhihuFill, BiClipboard2CheckFill ,
   RiShieldUserFill,
   BiCalendar2Minus,
   BiBriefcase,
-  MdArrowbackiosnewRound
+  MdArrowbackiosnewRound,
+  IoClose
 } from "oh-vue-icons/icons";
 addIcons(FaFlag, RiZhihuFill, BiClipboard2CheckFill,
   FaBalanceScale,
@@ -122,7 +123,8 @@ addIcons(FaFlag, RiZhihuFill, BiClipboard2CheckFill,
   RiShieldUserFill,
   BiCalendar2Minus,
   BiBriefcase,
-  MdArrowbackiosnewRound
+  MdArrowbackiosnewRound,
+  IoClose
 );
 
 // Import the functions you need from the SDKs you need

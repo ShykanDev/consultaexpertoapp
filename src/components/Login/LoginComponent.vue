@@ -311,22 +311,54 @@ const loading = ref(false);
 const setLoading = (value: boolean) =>  loading.value = value;
 
 
-onIonViewDidEnter(() => {
-  console.log('Component ViewDidEnter');
-})
-
-onIonViewWillEnter(() => {
-  console.log('Component ViewWillEnter');
-})
-
-onIonViewWillLeave(() => {
-  console.log('Component ViewWillLeave');
-})
-
-onIonViewDidLeave(() => {
-  console.log('Component ViewDidLeave');
-})
-
+//Animation for brand name
+  
+  const names = [
+    ['consulta', 'gratis', 'en', 'linea', '.com'],
+    ['consulta', 'experto', '.com'],
+    ['consulta', 'especializada', '.com']
+  ];
+  
+  const currentName = ref<string[]>(names[0]);
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  
+  const startAnimation = () => {
+    const changeName = () => {
+      timeoutId = setTimeout(() => {
+        const currentIndex = names.findIndex(name => 
+          JSON.stringify(name) === JSON.stringify(currentName.value)
+        );
+        const nextIndex = (currentIndex + 1) % names.length;
+        currentName.value = names[nextIndex];
+        changeName(); // Siguiente iteración
+      }, 2000);
+    };
+    
+    // Iniciar la animación
+    changeName();
+  };
+  
+  const stopAnimation = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  };
+  
+  // Cuando la vista está a punto de entrar
+  onIonViewDidEnter(() => {
+    startAnimation();
+  });
+  
+  // Cuando la vista está a punto de salir
+  onIonViewWillLeave(() => {
+    stopAnimation();
+  });
+  
+  // Cuando la vista ya salió
+  onIonViewDidLeave(() => {
+    stopAnimation();
+  });
 </script>
 
 <style scoped>

@@ -17,7 +17,7 @@
         </div>
       </ion-toolbar>
     </ion-header>
-    <section v-if="isLoading" class="flex fixed top-0 right-0 bottom-0 left-0 z-50 justify-center items-center bg-black/45"> <!-- Loader -->
+    <section v-if="isLoading" class="flex fixed right-0 bottom-0 left-0 top-14 z-50 justify-center items-center bg-black/45"> <!-- Loader -->
       <LoaderBlue  />
     </section>
     <section>
@@ -407,6 +407,8 @@ const isLoading = ref(true)
 
 //Function to get the dates from Firebase
 const getDates = async () => {
+  isLoading.value = true;
+  availableTimeData.value = [];
   try {
     // 1. Obtener datos de Firebase
     const querySnapshot = await getDocs(collectionMockExperts);
@@ -455,6 +457,8 @@ const getDates = async () => {
     //(availableTimeData.value);
   } catch (error) {
     console.error('Error al obtener fechas:', error);
+    notyf.error('Error al obtener fechas');
+    isLoading.value = false;
   } finally {
     isLoading.value = false;
   }
@@ -663,20 +667,28 @@ const addAppointmentToClient = async() => {
 
 
 //Getting the dates and returning the hours taken that matches with the user uid
-const getIsUserScheduled =  () => {
-  //(availableTimeData.value);
-  
-  availableTimeData.value.forEach((day: any) => {
-    console.log('day', day);
-      
-  })
-  if (availableTimeData.value[0].days[0].slots.some( (slot: any) => slot.takenBy === authStore().getUserUid)) {
-    userHasScheduled.value = true;
-    notyf.error('Ya tienes una cita programada con este experto');
-    return false;
+const getIsUserScheduled =  async () => {
+  try {
+    // Aseguramos que los datos estén cargados
+    if (!availableTimeData.value || availableTimeData.value.length === 0) {
+      await getDates();
+    }
+    
+    // Verificamos si el usuario ya tiene una cita programada
+    const hasAppointment = availableTimeData.value.some((week: any) => 
+      week.days.some((day: any) => 
+        day.slots.some((slot: any) => 
+          slot.takenBy === authStore().getUserUid
+        )
+      )
+    );
+    
+    return !hasAppointment; // Retorna true si NO tiene cita programada
+  } catch (error) {
+    console.error('Error al verificar citas existentes:', error);
+    return false; // En caso de error, asumimos que ya tiene cita para evitar duplicados
   }
-  return true;
-}
+};
 
 const scheduleAppointment = async () => {
   const appointmentStore = useAppointmentStore();
@@ -697,13 +709,21 @@ const scheduleAppointment = async () => {
     return;
   }
 
- if (!getIsUserScheduled()) {
-    return;
- }
+  isLoading.value = true;
+  
   try {
-    isLoading.value = true;
+    // Primero obtenemos las fechas
+    await getDates();
+    
+    // Verificamos si el usuario ya tiene una cita programada
+    const hasExistingAppointment = await getIsUserScheduled();
+    if (!hasExistingAppointment) {
+      notyf.error('Ya tienes una cita programada con este experto');
+      isLoading.value = false;
+      return;
+    }
 
-    // Log to console the appointment being scheduled
+    // Resto del código para programar la cita
     console.log('Programando cita para:', {
       day: appointmentStore.dayName,
       hour: appointmentStore.selectedHour,
