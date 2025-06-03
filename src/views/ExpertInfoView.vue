@@ -8,12 +8,18 @@
       <ion-toolbar>
         <div class="flex items-center px-2">
           <article @click="router.back()"  class="flex items-center cursor-pointer">
-            <span class="py-1 font-semibold text-sky-600 font-quicksand">
+            <span class="flex items-center py-1 font-semibold text-sky-600 font-quicksand">
               <v-icon name="md-arrowbackiosnew-round" class="animate-fade-left" /> 
               <span class="text-base animate-fade-left animate-delay-100">atras</span>
             </span>
           </article>
-          <ion-title class="text-2xl font-bold text-center text-sky-600">Agendar Cita</ion-title>
+          
+          <div class="flex justify-between items-center pr-3 w-full">
+          <ion-title class="text-base font-bold text-blue-500 sm:text-xl font-quicksand">Agendar Cita</ion-title>
+          <div class="flex">
+            <span v-html="currentName" :key="currentName"></span>
+          </div>
+        </div>
         </div>
       </ion-toolbar>
     </ion-header>
@@ -334,7 +340,7 @@ const notyf = new Notyf({
 });
 
 import { onMounted, } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, IonRefresherContent, onIonViewDidEnter } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, IonRefresherContent, onIonViewDidEnter, onIonViewDidLeave } from '@ionic/vue';
 
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -718,7 +724,7 @@ const scheduleAppointment = async () => {
     // Verificamos si el usuario ya tiene una cita programada
     const hasExistingAppointment = await getIsUserScheduled();
     if (!hasExistingAppointment) {
-      notyf.error('Ya tienes una cita programada con este experto');
+      notyf.error('Ya tiene una cita programada con este experto');
       isLoading.value = false;
       return;
     }
@@ -1113,6 +1119,61 @@ onIonViewDidEnter(() => {
   getExpertInfo();
   getSchedulesFromAllExperts();
   getExpertData();
+})
+
+onIonViewDidLeave(() => {
+  availableTimeData.value = [];
+  data.formattedDate = '';
+  data.experienceYears = 0;
+  data.completedSessions = 0;
+  data.profesionalId = '';
+  data.email = '';
+  data.isBanned = false;
+  data.isSuspended = false;
+  data.suspensionReason = '';
+  data.imgUrl = '';
+})
+
+
+const names = [
+  [
+    '<span class="animate-fade-down animate-duration-300 animate-delay-100">consulta</span>' +
+    '<span class="text-blue-700 animate-fade animate-duration-300 animate-delay-200">gratis</span>' +
+    '<span class="animate-fade animate-duration-300 animate-delay-300">en</span>' +
+    '<span class="animate-fade animate-duration-300 animate-delay-500">linea</span>' +
+    '<span class="text-blue-500 animate-fade animate-duration-300 animate-delay-500">.com</span>'
+  ],
+  [
+    '<span class="animate-fade animate-duration-300 animate-delay-100">consulta</span>' +
+    '<span class="text-blue-700 animate-fade animate-duration-300 animate-delay-200">experto</span>' +
+    '<span class="text-blue-500 animate-fade animate-duration-300 animate-delay-300">.com</span>'
+  ],
+  [
+    '<span class="animate-fade-down animate-delay-100">consulta</span>' +
+    '<span class="text-blue-700 animate-fade animate-delay-200">especializada</span>' +
+    '<span class="text-blue-500 animate-fade animate-delay-300">.com</span>'
+  ]
+];
+
+let timeoutId: NodeJS.Timeout | null = null;
+const currentName = ref<string[]>(names[0]);
+ const animateNames = () => {
+  timeoutId = setInterval(() => {
+    const randomIndex = Math.floor(Math.random() * names.length);
+    currentName.value = names[randomIndex];
+  }, 2000);
+  
+ }
+
+ onIonViewDidEnter(() => {
+  animateNames();
+})
+
+onIonViewDidLeave(() => {
+  if(timeoutId){
+    clearInterval(timeoutId);
+    timeoutId = null;
+  }
 })
 </script>
 

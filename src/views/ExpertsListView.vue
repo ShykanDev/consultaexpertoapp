@@ -3,9 +3,14 @@
 
 <ion-header>
   <ion-toolbar>
-    <ion-title class="text-2xl font-bold text-center text-emerald-600 font-inter">Listado de Expertos</ion-title>
+    <div class="flex justify-between items-center pr-3 w-full">
+          <ion-title class="text-base font-bold text-green-700 sm:text-xl font-quicksand">Listado de Expertos</ion-title>
+          <div class="flex">
+            <span v-html="currentName" :key="currentName"></span>
+          </div>
+        </div>
     <ion-buttons slot="end">
-      <ion-button v-if="expertPopup" @click="toggleExpertPopup('close')" color="danger" mode="ios" class="animate-fade-left">Cerrar <v-icon name="io-close"  class="ml-2 animate-fade-left animate-delay-[55ms]" /></ion-button>
+      <ion-button v-if="expertPopup" @click="toggleExpertPopup('close')" color="danger" mode="ios"  class="animate-fade-left" expand="full">Cerrar <v-icon name="io-close" class="ml-2 animate-fade-left animate-delay-[55ms] " /></ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -247,7 +252,7 @@
 import PrevInfoComponent from '@/components/Expert/PrevInfoComponent.vue';
 import SpecializationCard from '@/components/ExpertList/SpecializationCard.vue';
 import { userStore } from '@/store/user';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel, onIonViewDidLeave } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel, onIonViewDidLeave, onIonViewDidEnter } from '@ionic/vue';
 import { collection, getDocs, getFirestore, updateDoc } from 'firebase/firestore';
 import { onMounted, ref } from 'vue';
 
@@ -260,6 +265,7 @@ const setUserStore = (name: string, category: string, id: string) => {
  console.log(name, category, id);
 };
 
+import { IonButtons } from '@ionic/vue';
 // Import images
 import calculadoraImg from '../assets/img/calculadora.jpg';
 import arquitectoImg from '../assets/img/arquitecto-categoria.jpg';
@@ -505,6 +511,46 @@ const gettingMockExperts = async () => {
 }
 
 
+const names = [
+  [
+    '<span class="animate-fade-down animate-duration-300 animate-delay-100">consulta</span>' +
+    '<span class="text-emerald-700 animate-fade animate-duration-300 animate-delay-200">gratis</span>' +
+    '<span class="animate-fade animate-duration-300 animate-delay-300">en</span>' +
+    '<span class="animate-fade animate-duration-300 animate-delay-500">linea</span>' +
+    '<span class="text-emerald-500 animate-fade animate-duration-300 animate-delay-500">.com</span>'
+  ],
+  [
+    '<span class="animate-fade animate-duration-300 animate-delay-100">consulta</span>' +
+    '<span class="text-emerald-700 animate-fade animate-duration-300 animate-delay-200">experto</span>' +
+    '<span class="text-emerald-500 animate-fade animate-duration-300 animate-delay-300">.com</span>'
+  ],
+  [
+    '<span class="animate-fade-down animate-delay-100">consulta</span>' +
+    '<span class="text-emerald-700 animate-fade animate-delay-200">especializada</span>' +
+    '<span class="text-emerald-500 animate-fade animate-delay-300">.com</span>'
+  ]
+];
+
+let timeoutId: NodeJS.Timeout | null = null;
+const currentName = ref<string[]>(names[0]);
+ const animateNames = () => {
+  timeoutId = setInterval(() => {
+    const randomIndex = Math.floor(Math.random() * names.length);
+    currentName.value = names[randomIndex];
+  }, 2000);
+  
+ }
+
+ onIonViewDidEnter(() => {
+  animateNames();
+})
+
+onIonViewDidLeave(() => {
+  if(timeoutId){
+    clearInterval(timeoutId);
+    timeoutId = null;
+  }
+})
 </script>
 
 <style scoped>

@@ -10,7 +10,7 @@
             Inicio de Sesión
           </ion-title>
           <div class="flex">
-            <span v-html="currentName"></span>
+            <span v-html="currentName" :key="currentName"></span>
           </div>
         </div>
       </ion-toolbar>
@@ -42,23 +42,24 @@ import { onIonViewDidEnter,
 
   const names = [
   [
-    '<span class="animate-fade-in animate-duration-300 animate-delay-100">consulta</span>',
-    '<span class="animate-fade-in animate-duration-300 animate-delay-200">gratis</span>',
-    '<span class="animate-fade-in animate-duration-300 animate-delay-300">en</span>',
-    '<span class="animate-fade-in animate-duration-300 animate-delay-400">linea</span>',
-    '<span class="text-sky-500 animate-fade-in animate-duration-300 animate-delay-500">.com</span>'
+    '<span class="animate-fade-down animate-duration-300 animate-delay-100">consulta</span>' +
+    '<span class="text-sky-700 animate-fade animate-duration-300 animate-delay-200">gratis</span>' +
+    '<span class="animate-fade animate-duration-300 animate-delay-300">en</span>' +
+    '<span class="animate-fade animate-duration-300 animate-delay-500">linea</span>' +
+    '<span class="text-sky-500 animate-fade animate-duration-300 animate-delay-500">.com</span>'
   ],
   [
-    '<span class="animate-fade-in animate-duration-300 animate-delay-100">consulta</span>',
-    '<span class="animate-fade-in animate-duration-300 animate-delay-200">experto</span>',
-    '<span class="text-sky-500 animate-fade-in animate-duration-300 animate-delay-300">.com</span>'
+    '<span class="animate-fade animate-duration-300 animate-delay-100">consulta</span>' +
+    '<span class="text-sky-700 animate-fade animate-duration-300 animate-delay-200">experto</span>' +
+    '<span class="text-sky-500 animate-fade animate-duration-300 animate-delay-300">.com</span>'
   ],
   [
-    '<span class="animate-fade-in animate-delay-100">consulta</span>',
-    '<span class="animate-fade-in animate-delay-200">especializada</span>',
-    '<span class="text-sky-500 animate-fade-in animate-delay-300">.com</span>'
+    '<span class="animate-fade-down animate-delay-100">consulta</span>' +
+    '<span class="text-sky-700 animate-fade animate-delay-200">especializada</span>' +
+    '<span class="text-sky-500 animate-fade animate-delay-300">.com</span>'
   ]
 ];
+
 let timeoutId: NodeJS.Timeout | null = null;
 const currentName = ref<string[]>(names[0]);
  const animateNames = () => {
