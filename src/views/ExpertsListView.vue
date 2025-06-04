@@ -4,9 +4,9 @@
 <ion-header>
   <ion-toolbar>
     <div class="flex justify-between items-center pr-3 w-full">
-          <ion-title class="text-base font-bold text-green-700 sm:text-xl font-quicksand">Listado de Expertos</ion-title>
+          <ion-title v-if="!expertPopup" class="text-base font-bold text-green-700 sm:text-xl font-quicksand">Listado de Expertos</ion-title>
           <div class="flex">
-            <span v-html="currentName" :key="currentName"></span>
+            <span v-html="currentName" :key="currentName" :class="{'pl-2': expertPopup}"></span>
           </div>
         </div>
     <ion-buttons slot="end">

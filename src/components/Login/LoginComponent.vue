@@ -1,5 +1,6 @@
 <template>
-  <div class="relative w-full ion-padding">
+
+    <div class="relative w-full bg-white ion-padding">
 
     <section v-if="loading" class="flex fixed top-0 right-0 bottom-0 left-0 z-50 justify-center items-center bg-white bg-opacity-90"> <!--Loader dots spinner (when user is logging in)-->
       <LoaderMultipleDots />-
@@ -127,7 +128,8 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { IonContent } from '@ionic/vue';
 import { useRouter } from 'vue-router';
 import {
   IonItem,
@@ -150,8 +152,7 @@ import { authStore } from '@/store/auth';
 import { collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
 import LoaderMultipleDots from '@/animations/LoaderMultipleDots.vue';
 import clientStore from '@/store/client';
-import { onIonViewWillEnter,
-  onIonViewDidEnter,
+import { onIonViewDidEnter,
   onIonViewWillLeave,
   onIonViewDidLeave } from '@ionic/vue';
 const email = ref('');

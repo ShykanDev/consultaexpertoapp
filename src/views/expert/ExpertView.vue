@@ -12,7 +12,15 @@
       <InfoUserLoader v-if="isLoading" />
 
 <!-- Sección superior con foto y datos principales -->
-<section v-else class="px-4 py-12 text-white bg-gradient-to-br from-sky-300 to-blue-600">
+<section  v-else class="px-4 py-12 text-white bg-gradient-to-br from-sky-300 to-blue-600">
+  <div v-if="showAppointmentData" @click="showAppointmentData = false" class="flex fixed top-0 right-0 bottom-0 left-0 z-50 justify-center items-center bg-black/50">
+    <div class="flex flex-col p-4 bg-white rounded-3xl">
+      <span class="font-bold text-slate-600"><span class="font-bold text-blue-600">Nombre:</span> {{ appointmentData.name }}</span>
+      <span class="font-bold text-slate-600"><span class="font-bold text-blue-600">Dia:</span> {{ appointmentData.day }}</span>
+      <span class="font-bold text-slate-600"><span class="font-bold text-blue-600">Hora:</span> {{ appointmentData.hour }}</span>
+      <span class="font-bold text-slate-600"><span class="font-bold text-blue-600">Estado de la cita:</span> {{ appointmentData.status ? 'Confirmada' : 'Por confirmar' }}</span>
+    </div>
+  </div>
   <div class="container mx-auto">
     <div class="flex flex-col items-center md:flex-row">
       <div class="flex justify-center w-full md:w-1/3 md:justify-start">
@@ -166,7 +174,7 @@
    slot.takenBy === 'ID_DEL_USUARIO' ? 'Ocupado' : '') 
 }}
             </span>
-            <ion-button  v-if="slot.takenBy !== null" @click="getAppointmentData(slot.takenBy)" class="text-blue-600 rounded-full" fill="outline" mode="md">Ver info</ion-button>
+            <ion-button  v-if="slot.takenBy !== null" @click="getAppointmentData(slot.takenBy, day.day, slot.hour, slot.isConfirmed)" class="text-blue-600 rounded-full" fill="outline" mode="md">Ver info</ion-button>
             <ion-button v-if="slot.isConfirmed == false" @click="confirmarCita(day.day, slot.hour)" class="text-white rounded-full" fill="solid" color="primary" mode="ios">Confirmar Cita</ion-button>
            
           </div>
@@ -343,8 +351,14 @@ const handleRefresh = (event: CustomEvent) => {
    
 
 const usersCollection = collection(db, 'users');
-const appointmentData = ref();
- const getAppointmentData = async (userUidParam:string) => {
+const appointmentData = reactive({
+  name: '',
+  day: '',
+  hour: '',
+  status: '',
+});
+const showAppointmentData = ref(false);
+ const getAppointmentData = async (userUidParam:string, dayParam:string, hourParam:string, statusParam:string) => {
   try {
     const qGetAppointmentData = query(usersCollection, where('userId', '==', userUidParam));
     const appointmentSnapshot = await getDocs(qGetAppointmentData);
@@ -352,8 +366,12 @@ const appointmentData = ref();
       console.log('No se encontró la cita');
       return;
     }
-    appointmentData.value = appointmentSnapshot.docs[0].data();
-    console.log(appointmentData.value);
+    showAppointmentData.value = true;
+    appointmentData.name = appointmentSnapshot.docs[0].data().name;
+    appointmentData.day = dayParam;
+    appointmentData.hour = hourParam;
+    appointmentData.status = statusParam;
+    console.log(appointmentData);
   } catch (error) {
     console.log(error);
   }

@@ -1,6 +1,4 @@
 <template>
-  <!-- LOGIN -->
-  
   <ion-page class="animate-fade-right">
     <!-- Header Top Left-->
     <ion-header>
@@ -16,31 +14,20 @@
       </ion-toolbar>
     </ion-header>
 
-    <!-- Content -->
-    <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Tab 1</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
-   
-      <div class="flex justify-center w-full ion-padding">
-        <LoginComponent />
-      </div>
-
-    </ion-content>
+    <!-- Eliminamos el ion-content de aquí -->
+    <div class="bg-white login-page-content">
+      <LoginComponent />
+    </div>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle } from '@ionic/vue';
 import LoginComponent from '@/components/Login/LoginComponent.vue';
-import { ref } from 'vue';
-import { onIonViewDidEnter,
-  onIonViewDidLeave } from '@ionic/vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { onIonViewDidEnter, onIonViewDidLeave } from '@ionic/vue';
 
-  const names = [
+const names = [
   [
     '<span class="animate-fade-down animate-duration-300 animate-delay-100">consulta</span>' +
     '<span class="text-sky-700 animate-fade animate-duration-300 animate-delay-200">gratis</span>' +
@@ -62,27 +49,52 @@ import { onIonViewDidEnter,
 
 let timeoutId: NodeJS.Timeout | null = null;
 const currentName = ref<string[]>(names[0]);
- const animateNames = () => {
+
+const animateNames = () => {
   timeoutId = setInterval(() => {
     const randomIndex = Math.floor(Math.random() * names.length);
     currentName.value = names[randomIndex];
   }, 2000);
-  
- }
+}
 
- onIonViewDidEnter(() => {
+onIonViewDidEnter(() => {
   animateNames();
-})
+});
 
 onIonViewDidLeave(() => {
-  if(timeoutId){
+  if(timeoutId) {
     clearInterval(timeoutId);
     timeoutId = null;
   }
-})
+});
 
+// Limpiar el intervalo cuando el componente se desmonte
+onUnmounted(() => {
+  if(timeoutId) {
+    clearInterval(timeoutId);
+  }
+});
 </script>
 
 <style scoped>
+.login-page-content {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px;
+  padding-bottom: 40px; /* Espacio para el teclado */
+}
 
+/* Asegurar que el contenido no esté detrás de la barra de estado en iOS */
+ion-header {
+  --ion-safe-area-top: env(safe-area-inset-top);
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+  .login-page-content {
+    padding-bottom: 30vh; /* Más espacio para el teclado en móviles */
+  }
+}
 </style>

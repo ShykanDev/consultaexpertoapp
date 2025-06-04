@@ -419,6 +419,8 @@ const getDates = async () => {
     // 1. Obtener datos de Firebase
     const querySnapshot = await getDocs(collectionMockExperts);
     const docData = querySnapshot.docs[0]?.data();
+    console.log('docData for debug (possible mix of data issue )', docData);
+    
     if (!docData?.weeklySchedule) return;
 
     const today = new Date();
@@ -675,24 +677,30 @@ const addAppointmentToClient = async() => {
 //Getting the dates and returning the hours taken that matches with the user uid
 const getIsUserScheduled =  async () => {
   try {
+    console.log('Verificando si el usuario ya tiene cita...');
+    const currentUserId = authStore().getUserUid;
+    console.log('ID del usuario actual:', currentUserId);
+    
     // Aseguramos que los datos estén cargados
     if (!availableTimeData.value || availableTimeData.value.length === 0) {
+      console.log('Cargando fechas...');
       await getDates();
     }
-    
+
     // Verificamos si el usuario ya tiene una cita programada
     const hasAppointment = availableTimeData.value.some((week: any) => 
       week.days.some((day: any) => 
         day.slots.some((slot: any) => 
-          slot.takenBy === authStore().getUserUid
+          slot.takenBy === currentUserId
         )
       )
     );
-    
-    return !hasAppointment; // Retorna true si NO tiene cita programada
+
+    console.log('¿Tiene cita programada?', hasAppointment);
+    return hasAppointment;
   } catch (error) {
     console.error('Error al verificar citas existentes:', error);
-    return false; // En caso de error, asumimos que ya tiene cita para evitar duplicados
+    return true; // En caso de error, asumimos que ya tiene cita para evitar duplicados
   }
 };
 
@@ -723,7 +731,7 @@ const scheduleAppointment = async () => {
     
     // Verificamos si el usuario ya tiene una cita programada
     const hasExistingAppointment = await getIsUserScheduled();
-    if (!hasExistingAppointment) {
+    if (hasExistingAppointment) {
       notyf.error('Ya tiene una cita programada con este experto');
       isLoading.value = false;
       return;
@@ -1137,11 +1145,11 @@ onIonViewDidLeave(() => {
 
 const names = [
   [
-    '<span class="animate-fade-down animate-duration-300 animate-delay-100">consulta</span>' +
-    '<span class="text-blue-700 animate-fade animate-duration-300 animate-delay-200">gratis</span>' +
-    '<span class="animate-fade animate-duration-300 animate-delay-300">en</span>' +
-    '<span class="animate-fade animate-duration-300 animate-delay-500">linea</span>' +
-    '<span class="text-blue-500 animate-fade animate-duration-300 animate-delay-500">.com</span>'
+    '<span class="text-sm animate-fade-down animate-duration-300 animate-delay-100">consulta</span>' +
+    '<span class="text-sm text-blue-700 animate-fade animate-duration-300 animate-delay-200">gratis</span>' +
+    '<span class="text-sm animate-fade animate-duration-300 animate-delay-300">en</span>' +
+    '<span class="text-sm animate-fade animate-duration-300 animate-delay-500">linea</span>' +
+    '<span class="text-sm text-blue-500 animate-fade animate-duration-300 animate-delay-500">.com</span>'
   ],
   [
     '<span class="animate-fade animate-duration-300 animate-delay-100">consulta</span>' +
@@ -1149,9 +1157,9 @@ const names = [
     '<span class="text-blue-500 animate-fade animate-duration-300 animate-delay-300">.com</span>'
   ],
   [
-    '<span class="animate-fade-down animate-delay-100">consulta</span>' +
-    '<span class="text-blue-700 animate-fade animate-delay-200">especializada</span>' +
-    '<span class="text-blue-500 animate-fade animate-delay-300">.com</span>'
+    '<span class="text-sm animate-fade-down animate-delay-100">consulta</span>' +
+    '<span class="text-sm text-blue-700 animate-fade animate-delay-200">especializada</span>' +
+    '<span class="text-sm text-blue-500 animate-fade animate-delay-300">.com</span>'
   ]
 ];
 
