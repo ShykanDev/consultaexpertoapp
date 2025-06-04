@@ -197,7 +197,7 @@
           <!-- Confirmación de cita mejorada -->
           <article 
             class="mt-8 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-xl">
-            <div class="flex flex-col gap-6 items-center p-8 md:flex-row">
+            <div  v-if="useAppointmentStore().getSelectedHour" class="flex flex-col gap-6 items-center p-8 animate-fade-down animate-delay-300 md:flex-row">
               <div class="flex-1">
                 <h3 class="flex gap-3 items-center text-2xl font-semibold text-white">
                   <v-icon name="bi-calendar" class="text-white" />
