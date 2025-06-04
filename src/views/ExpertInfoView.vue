@@ -416,57 +416,39 @@ const getDates = async () => {
   isLoading.value = true;
   availableTimeData.value = [];
   try {
-    // 1. Obtener datos de Firebase
     const querySnapshot = await getDocs(collectionMockExperts);
     const docData = querySnapshot.docs[0]?.data();
-    console.log('docData for debug (possible mix of data issue )', docData);
     
-    if (!docData?.weeklySchedule) return;
+    if (!docData?.days) {
+      console.error('No se encontró la estructura de días');
+      return;
+    }
 
     const today = new Date();
-    const currentDay = today.getDay(); // 0=Domingo, 1=Lunes, ..., 6=Sábado
+    const currentDay = today.getDay();
     const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
     
     // Reordenar días para que empiece por hoy
     const reorderedDays = [
-      ...daysOfWeek.slice(currentDay),  // Días de hoy en adelante
-      ...daysOfWeek.slice(0, currentDay) // Días pasados de la semana
+      ...daysOfWeek.slice(currentDay),
+      ...daysOfWeek.slice(0, currentDay)
     ];
 
-    // 2. Crear un mapa de días para acceso rápido
-    const scheduleMap = new Map(
-      docData.weeklySchedule.map(day => [day.dayInfo.day, day])
-    );
-
-    // 3. Generar la semana actual empezando por hoy
-    const currentWeekSchedule = reorderedDays.map((dayName, index) => {
-      const targetDate = new Date(today);
-      targetDate.setDate(today.getDate() + index); // Sumar días a partir de hoy
-
-      const existingDay = scheduleMap.get(dayName) || { dayInfo: { hoursTaken: [] } };
-      
-      return {
-        dayInfo: {
-          ...existingDay.dayInfo,
-          day: dayName,
-          dayNumber: targetDate.getDate(),
-          fullDate: targetDate.toISOString().split('T')[0],
-          monthName: targetDate.toLocaleString('es-ES', { month: 'long' })
-        }
-      };
-    });
-
-    // 4. Actualizar el estado
+    // Actualizar el estado con la estructura de days
     availableTimeData.value = [{
-      ...docData,
-      weeklySchedule: currentWeekSchedule
+      days: docData.days.map(day => ({
+        ...day,
+        // Asegurarse de que los slots estén inicializados
+        slots: day.slots || []
+      }))
     }];
-    getClientAppointments()
-    //(availableTimeData.value);
+
+    console.log('Datos cargados (solo days):', availableTimeData.value);
+    getClientAppointments();
+    
   } catch (error) {
     console.error('Error al obtener fechas:', error);
-    notyf.error('Error al obtener fechas');
-    isLoading.value = false;
+    notyf.error('Error al cargar el horario');
   } finally {
     isLoading.value = false;
   }
@@ -880,100 +862,7 @@ const getSchedulesFromAllExperts = async () => {
 // Uso
 
 
-const transformAndUpdateSchedules = async () => {
-  try {
-    console.log('Iniciando actualización de horarios...');
-    
-    // 1. Obtener todos los expertos
-    const expertsSnapshot = await getDocs(collection(db, 'MockExperts'));
-    console.log(`Encontrados ${expertsSnapshot.size} expertos`);
-    
-    // 2. Para cada experto, actualizar su Schedule
-    for (const expertDoc of expertsSnapshot.docs) {
-      const expertId = expertDoc.id;
-      //(`Procesando experto: ${expertId}`);
-      
-      const scheduleRef = collection(db, `MockExperts/${expertId}/Schedule`);
-      const scheduleSnapshot = await getDocs(scheduleRef);
-      //(`Encontrados ${scheduleSnapshot.size} documentos de horario`);
 
-      for (const doc of scheduleSnapshot.docs) {
-        try {
-          const oldData = doc.data();
-          //('Datos antiguos:', JSON.stringify(oldData, null, 2));
-          
-          // Verificar si weeklySchedule existe
-          if (!oldData.weeklySchedule || !Array.isArray(oldData.weeklySchedule)) {
-            console.error('El formato de datos no es el esperado (weeklySchedule no encontrado o no es un array)');
-            continue;
-          }
-
-          // Mapear días de la semana
-          const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-          
-          // Crear nuevo formato
-          const newSchedule = daysOfWeek.map(dayName => {
-            const dayData = oldData.weeklySchedule.find(item => 
-              item?.dayInfo?.day === dayName
-            );
-            
-            // Si no existe el día en los datos viejos, crear uno por defecto
-            if (!dayData) {
-              return {
-                day: dayName,
-                availableDay: true,
-                slots: [
-                  { hour: "10:00", takenBy: null },
-                  { hour: "11:00", takenBy: null },
-                  { hour: "12:00", takenBy: null },
-                  { hour: "13:00", takenBy: null },
-                  { hour: "14:30", takenBy: null },
-                  { hour: "15:00", takenBy: null },
-                  { hour: "16:00", takenBy: null },
-                  { hour: "17:00", takenBy: null }
-                ]
-              };
-            }
-            
-            // Mapear horas tomadas
-            const hoursTaken = new Set(dayData.dayInfo.hoursTaken || []);
-            const availableHours = dayData.dayInfo.availableHours || [];
-            
-            return {
-              day: dayName,
-              availableDay: !dayData.dayInfo.isDayAvailable,
-              slots: availableHours.map(hour => ({
-                hour,
-                takenBy: hoursTaken.has(hour) ? null : null
-              }))
-            };
-          });
-          
-          // Actualizar el documento
-          //('Nuevo formato:', JSON.stringify(newSchedule, null, 2));
-          await updateDoc(doc.ref, { 
-            ...oldData, // Mantener los datos existentes
-            days: newSchedule
-          });
-          //('Documento actualizado exitosamente');
-          
-        } catch (docError) {
-          console.error(`Error procesando documento ${doc.id}:`, docError);
-        }
-      }
-    }
-    
-    //('Proceso completado');
-    return true;
-  } catch (error) {
-    console.error('Error general:', error);
-    return false;
-  }
-};
-const getDayNumber = (dayName: string): number => {
-  const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-  return days.indexOf(dayName) + 1; // o la lógica que necesites
-};
 // En ExpertInfoView.vue
 const getWeekDays = () => {
   const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -1125,7 +1014,7 @@ onIonViewDidEnter(() => {
   userHasScheduled.value = false;
   getDates();
   getExpertInfo();
-  getSchedulesFromAllExperts();
+  //getSchedulesFromAllExperts();
   getExpertData();
 })
 
