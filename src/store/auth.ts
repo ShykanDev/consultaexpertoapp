@@ -19,6 +19,12 @@ export const authStore = defineStore('auth', {
         },
         setUserEmail(userEmail: string) {
             this.userEmail = userEmail;
+        },
+        setLogout() {
+            this.isAuth = false;
+            this.userName = null;
+            this.userUid = null;
+            this.userEmail = null;
         }
     },
     getters: {

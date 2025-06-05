@@ -80,7 +80,9 @@ import { FaFlag, RiZhihuFill, BiClipboard2CheckFill ,
   BiCalendar2Minus,
   BiBriefcase,
   MdArrowbackiosnewRound,
-  IoClose
+  IoClose,
+  HiLogin,
+  HiUserAdd
 } from "oh-vue-icons/icons";
 addIcons(FaFlag, RiZhihuFill, BiClipboard2CheckFill,
   FaBalanceScale,
@@ -124,8 +126,13 @@ addIcons(FaFlag, RiZhihuFill, BiClipboard2CheckFill,
   BiCalendar2Minus,
   BiBriefcase,
   MdArrowbackiosnewRound,
-  IoClose
+  IoClose,
+  HiLogin,
+  HiUserAdd
 );
+
+import { Capacitor } from '@capacitor/core';
+import { StatusBar, Style } from '@capacitor/status-bar';
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
@@ -154,6 +161,14 @@ const firebaseConfig = {
 const appFirebase = initializeApp(firebaseConfig);
 const analytics = getAnalytics(appFirebase);
 
+// Configuración de la StatusBar
+const setStatusBar = async () => {
+  if (Capacitor.isNativePlatform()) {
+    await StatusBar.setOverlaysWebView({ overlay: false });
+    await StatusBar.setBackgroundColor({ color: '#1e40af' });
+    await StatusBar.setStyle({ style: Style.Dark });
+  }
+};
 //El usuario deberá tener un estado de la cita (confirmada/por confirmar) (Cliente)
 //Para el experto debera confirmar primeramente la cita 
 const app = createApp(App)
@@ -162,7 +177,10 @@ const app = createApp(App)
   .use(router)
   .use(pinia)
   .component('VueDatePicker', VueDatePicker);
-router.isReady().then(() => {
-  app.mount('#app');
-});
 
+// Asegurarse de que la StatusBar se configure antes de montar la aplicación
+setStatusBar().then(() => {
+  router.isReady().then(() => {
+    app.mount('#app');
+  });
+});

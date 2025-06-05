@@ -108,7 +108,7 @@
         >
           <span class="flex gap-2 items-center">
             Crear cuenta
-            <v-icon name="ri-arrow-right-line" class="transition-transform group-hover:translate-x-1" />
+            <v-icon name="hi-user-add" class="transition-transform group-hover:translate-x-1" />
           </span>
         </ion-button>
   
@@ -119,22 +119,14 @@
         expand="block"
         class="submit-button group"
         router-link="/tabs/tab1"
+        color="secondary"
       >
-        <span class="flex gap-2 items-center">
-          Ingrese aquí
-          <v-icon name="ri-arrow-right-line" class="transition-transform group-hover:translate-x-1" />
+      <span class="flex gap-2 items-center">
+          <v-icon name="hi-login" class="transition-transform group-hover:translate-x-1" />
+          Ir al inicio de sesión
         </span>
       </ion-button>
-      <ion-button
-        expand="block"
-        class="submit-button group"
-        router-link="/tabs/experts-list"
-      >
-        <span class="flex gap-2 items-center">
-          Ver lista de expertos
-          <v-icon name="ri-arrow-right-line" class="transition-transform group-hover:translate-x-1" />
-        </span>
-      </ion-button>
+
 
       </form>
     </ion-content>

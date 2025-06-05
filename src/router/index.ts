@@ -60,7 +60,7 @@ const routes: Array<RouteRecordRaw> = [
         meta:{
           requiresAuth: true
         }
-      }
+      },
     ],
     
   },
@@ -76,12 +76,19 @@ const routes: Array<RouteRecordRaw> = [
     path: '/expert-info',
     component: () => import('@/views/ExpertInfoView.vue'),
     meta:{
-      requiresAuth: false
+      requiresAuth: true
     }
   },
   {
     path:'/expert',
     component: () => import('@/views/expert/ExpertView.vue'),
+    meta:{
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/logout',
+    component: () => import('@/views/LogoutView.vue'),
     meta:{
       requiresAuth: true
     }

@@ -129,7 +129,6 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
-import { IonContent } from '@ionic/vue';
 import { useRouter } from 'vue-router';
 import {
   IonItem,
@@ -210,6 +209,8 @@ const login = async () => {
       //  authStore().setUserName(user.user.displayName);
         authStore().setUserUid(user.user.uid);
         clientStore().setClientUid(user.user.uid);
+        authStore().setUserName(user.user.displayName || 'Usuario');
+        authStore().setUserEmail(user.user.email);
         router.push('/tabs/experts-list');
         console.log('el usuario no es experto');
         

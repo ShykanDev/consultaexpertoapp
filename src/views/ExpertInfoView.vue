@@ -262,17 +262,10 @@
       <section class="py-3 bg-gray-50">
         <div class="container px-4 mx-auto max-w-7xl">
           <div class="grid gap-8 lg:grid-cols-2">
-            <!-- Servicios mejorados -->
-            <div class="p-8 bg-white rounded-xl ring-1 ring-gray-100 shadow-lg">
-              <h2 class="flex gap-2 items-center mb-6 text-2xl font-bold text-gray-900">
-                <v-icon name="bi-patch-question" class="text-blue-600" />
-                Servicios profesionales
-              </h2>
-          
-            </div>
+    
 
             <!-- Formulario de contacto mejorado -->
-            <div class="p-8 bg-white rounded-xl ring-1 ring-gray-100 shadow-lg">
+            <div class="hidden p-8 bg-white rounded-xl ring-1 ring-gray-100 shadow-lg">
               <div class="flex gap-3 items-center mb-8">
            
                 <h2 class="text-2xl font-bold text-gray-900">Formulario de contacto</h2>
