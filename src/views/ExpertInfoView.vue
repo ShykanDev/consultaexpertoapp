@@ -641,6 +641,10 @@ const addAppointmentToClient = async() => {
    expertUid: sysStore.getSelectedExpertUid,
    userId: authStore().getUserUid,
    createdAt: Timestamp.now(),
+   expertName: data.name,
+   specialty: data.specialty,
+   professionalId: data.profesionalId,
+   appointmentLink:''
  })
  //('Cita agregada exitosamente');
   } catch (error) {

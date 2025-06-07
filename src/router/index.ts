@@ -61,6 +61,13 @@ const routes: Array<RouteRecordRaw> = [
           requiresAuth: true
         }
       },
+      {
+        path: 'client-appointments',
+        component: () => import('@/views/client/ClientAppointmentsView.vue'),
+        meta:{
+          requiresAuth: true
+        }
+      },  
     ],
     
   },

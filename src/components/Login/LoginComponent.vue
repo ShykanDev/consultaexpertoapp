@@ -200,6 +200,7 @@ const login = async () => {
         authStore().setUserUid(user.user.uid);
         authStore().setUserName(user.user.displayName || '');
         authStore().setUserEmail(user.user.email);
+        authStore().setIsExpert(true);
         console.log('el usuario es experto');
         router.push('/expert');
       }
@@ -211,6 +212,7 @@ const login = async () => {
         clientStore().setClientUid(user.user.uid);
         authStore().setUserName(user.user.displayName || 'Usuario');
         authStore().setUserEmail(user.user.email);
+        authStore().setIsClient(true);
         router.push('/tabs/experts-list');
         console.log('el usuario no es experto');
         

@@ -82,7 +82,13 @@ import { FaFlag, RiZhihuFill, BiClipboard2CheckFill ,
   MdArrowbackiosnewRound,
   IoClose,
   HiLogin,
-  HiUserAdd
+  HiUserAdd,
+  FaUser, FaUserTie, 
+  BiAlarm,
+  BiCalendar2MinusFill,
+  BiInfoCircle,
+  FaCalendarCheck,
+  FaLink
 } from "oh-vue-icons/icons";
 addIcons(FaFlag, RiZhihuFill, BiClipboard2CheckFill,
   FaBalanceScale,
@@ -128,7 +134,12 @@ addIcons(FaFlag, RiZhihuFill, BiClipboard2CheckFill,
   MdArrowbackiosnewRound,
   IoClose,
   HiLogin,
-  HiUserAdd
+  HiUserAdd,FaUser, FaUserTie, 
+  BiAlarm,
+  BiCalendar2MinusFill,
+  BiInfoCircle,
+  FaCalendarCheck,
+  FaLink
 );
 
 import { Capacitor } from '@capacitor/core';

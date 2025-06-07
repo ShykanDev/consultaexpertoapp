@@ -233,14 +233,7 @@
   <div class="container flex flex-col gap-3 items-center px-6 py-12 mx-auto text-white">
     <p class="mb-4 font-inter">Página certificada con seguridad SSL</p>
     <img src="../assets/img/SSL-certificado.png" alt="Certificado SSL" class="mx-auto w-32">
-    <ion-button
-    router-link="/tabs/tab1"
-    class="px-4 py-2 font-medium text-white font-inter"
-    color="primary"
-    fill="solid"
-    >
-      Volver al inicio
-    </ion-button>
+
   </div>
 </ion-content>
 
@@ -542,6 +535,10 @@ const currentName = ref<string[]>(names[0]);
  }
 
  onIonViewDidEnter(() => {
+  if(timeoutId){
+    clearInterval(timeoutId);
+    timeoutId = null;
+  }
   animateNames();
 })
 
@@ -550,6 +547,9 @@ onIonViewDidLeave(() => {
     clearInterval(timeoutId);
     timeoutId = null;
   }
+  
+  toggleExpertPopup('close');
+  console.log('User has left the page');
 })
 </script>
 

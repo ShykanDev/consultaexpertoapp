@@ -12,7 +12,9 @@
           
           <div class="flex justify-between items-center pr-3 w-full">
           <ion-title class="text-base font-bold text-blue-500 sm:text-xl font-quicksand">Mi Cuenta</ion-title>
-
+          <div class="flex">
+            <span v-html="currentName" :key="currentName"></span>
+          </div>
         </div>
         </div>
         </ion-toolbar>
@@ -83,7 +85,9 @@
     IonInput, 
     IonItem, 
     IonLabel,
-    IonIcon
+    IonIcon,
+    onIonViewDidLeave,
+    onIonViewDidEnter
     
   } from '@ionic/vue';
   import { 
@@ -143,6 +147,50 @@ import { getAuth } from 'firebase/auth';
     }
   };
 
+  const names = [
+  [
+    '<span class="animate-fade-down animate-duration-300 animate-delay-100">consulta</span>' +
+    '<span class="text-cyan-700 animate-fade animate-duration-300 animate-delay-200">gratis</span>' +
+    '<span class="animate-fade animate-duration-300 animate-delay-300">en</span>' +
+    '<span class="animate-fade animate-duration-300 animate-delay-500">linea</span>' +
+    '<span class="text-cyan-500 animate-fade animate-duration-300 animate-delay-500">.com</span>'
+  ],
+  [
+    '<span class="animate-fade animate-duration-300 animate-delay-100">consulta</span>' +
+    '<span class="text-cyan-700 animate-fade animate-duration-300 animate-delay-200">experto</span>' +
+    '<span class="text-cyan-500 animate-fade animate-duration-300 animate-delay-300">.com</span>'
+  ],
+  [
+    '<span class="animate-fade-down animate-delay-100">consulta</span>' +
+    '<span class="text-cyan-700 animate-fade animate-delay-200">especializada</span>' +
+    '<span class="text-cyan-500 animate-fade animate-delay-300">.com</span>'
+  ]
+];
+
+let timeoutId: NodeJS.Timeout | null = null;
+const currentName = ref<string[]>(names[0]);
+ const animateNames = () => {
+  timeoutId = setInterval(() => {
+    const randomIndex = Math.floor(Math.random() * names.length);
+    currentName.value = names[randomIndex];
+  }, 2000);
+  
+ }
+
+ onIonViewDidEnter(() => {
+  if(timeoutId){
+    clearInterval(timeoutId);
+    timeoutId = null;
+  }
+  animateNames();
+})
+
+onIonViewDidLeave(() => {
+  if(timeoutId){
+    clearInterval(timeoutId);
+    timeoutId = null;
+  }
+})
   </script>
   
   <style scoped>
