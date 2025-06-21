@@ -174,6 +174,8 @@
    slot.takenBy === 'ID_DEL_USUARIO' ? 'Ocupado' : '') 
 }}
             </span>
+
+            <div v-if="slot.isConfirmed" class="px-2 py-1 text-emerald-600 bg-emerald-50 rounded-full border border-emerald-500">Cita confirmada <v-icon name="bi-clipboard-check" color="emerald" class="ml-1" /></div>
             <ion-button  v-if="slot.takenBy !== null" @click="getAppointmentData(slot.takenBy, day.day, slot.hour, slot.isConfirmed)" class="text-blue-600 rounded-full" fill="outline" mode="md">Ver info</ion-button>
             <ion-button v-if="slot.isConfirmed == false" @click="confirmarCita(day.day, slot.hour)" class="text-white rounded-full" fill="solid" color="primary" mode="ios">Confirmar Cita</ion-button>
            
